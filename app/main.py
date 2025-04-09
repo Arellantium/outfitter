@@ -1,5 +1,9 @@
 # app/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.configuration.database import engine
+from app.configuration.dependencies_database import get_db
+from app.models.models import Base, Utente
 from app.config import setup_logging
 
 setup_logging()
@@ -12,8 +16,15 @@ from app.middlewares.error_handle import global_error_handler
 from app.routers import auth, users  # Importa sia auth che users
 
 app = FastAPI()
-app.name = "FastAPI-Padel indoor"
-app.description = "API per la gestione di un centro sportivo di Padel indoor"
+
+@app.on_event("startup")
+async def on_startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+app.name = "FastAPI - Outfitter"
+app.description = "API per la gestione di un social network di outfitter"
 app.version = "0.1.0"
 app.license_info = {
     "name": "MIT License",
@@ -32,3 +43,4 @@ app.include_router(users.router)
 async def root():
     logger.info("Chiamata all'endpoint root")
     return {"message": "Hello World"}
+
