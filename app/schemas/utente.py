@@ -14,4 +14,4 @@ class UtenteBase(BaseModel):
         return validate_email(value) 
 
     class Config:
-        orm_mode = True  # Questo è necessario per permettere a Pydantic di lavorare con i modelli SQLAlchemy
+        from_attributes = True  # Questo è necessario per permettere a Pydantic di lavorare con i modelli SQLAlchemy
