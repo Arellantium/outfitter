@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+    .back-link {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <a class="back-link btn btn-outline-dark" href="profile.html">← Back to Profile</a>
+  <div class="container text-center">
+    <h2>Settings</h2>
+    <p class="text-muted">Here you can manage your account settings.</p>
+    
+    <!-- Form for Settings -->
+    <form id="settings-form">
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" placeholder="Enter your username" />
+      </div>
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter your email" />
+      </div>
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Enter your password" />
+      </div>
+      <!-- Save Button -->
+      <button type="submit" class="btn btn-primary">Save Settings</button>
+    </form>
+
+    <!-- Success Message -->
+    <div id="success-message" class="mt-3" style="display: none;">
+      <p class="text-success">Settings updated successfully!</p>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript for handling form submission
+    document.getElementById('settings-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      // Get the values from the form
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Here you can send the data to your backend to update the settings
+
+      // Display success message
+      document.getElementById('success-message').style.display = 'block';
+
+      // Optionally, clear the form
+      document.getElementById('settings-form').reset();
+    });
+  </script>
+</body>
+</html>
