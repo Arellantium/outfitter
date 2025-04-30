@@ -49,6 +49,7 @@ class Acquisto(Base):
     articolo_id = Column(Integer, nullable=True)
     outfit_id = Column(Integer, nullable=True)
     data_acquisto = Column(String, nullable=False)
+    prezzo_pagato = Column(Float, nullable = False)
 
 class Follow(Base):
     __tablename__ = "follow"
