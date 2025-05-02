@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profile – stAIlist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f4f4;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #333;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #555;
+    }
+
+    .back-link {
+      text-align: center;
+      display: block;
+      margin-top: 20px;
+      color: #777;
+      text-decoration: none;
+    }
+
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: #ccc;
+      margin: 0 auto 20px;
+      object-fit: cover;
+      display: block;
+    }
+
+    label {
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Modifica Profilo</h2>
+
+    <img src="" id="avatar-preview" class="avatar-preview" alt="Avatar" />
+    <label for="avatar">Immagine profilo</label>
+    <input type="file" id="avatar" accept="image/*" />
+
+    <label for="username">Nome utente</label>
+    <input type="text" id="username" placeholder="Il tuo nome" />
+
+    <label for="genere">Genere</label>
+    <select id="genere">
+      <option value="">Seleziona...</option>
+      <option value="Uomo">Uomo</option>
+      <option value="Donna">Donna</option>
+      <option value="Altro">Altro</option>
+    </select>
+
+    <button onclick="saveProfile()">Salva modifiche</button>
+    <a href="profile.html" class="back-link">↩ Torna al profilo</a>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8000";
+    const token = localStorage.getItem("token");
+
+    //if (!token) {
+    //  alert("Non sei loggato.");
+    //  window.location.href = "login.html";
+    //}
+
+    async function loadProfile() {
+      const res = await fetch(`${API_BASE}/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const user = await res.json();
+
+      document.getElementById("username").value = user.username || "";
+      document.getElementById("genere").value = user.genere || "";
+
+      // Immagine avatar predefinita
+      document.getElementById("avatar-preview").src = "https://ui-avatars.com/api/?name=" + user.username;
+    }
+
+    async function saveProfile() {
+      const newUsername = document.getElementById("username").value;
+      const newGenere = document.getElementById("genere").value;
+
+      const res = await fetch(`${API_BASE}/me`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: newUsername,
+          genere: newGenere
+        })
+      });
+
+      if (res.ok) {
+        alert("Modifiche salvate!");
+        window.location.href = "profile.html";
+      } else {
+        alert("Errore nel salvataggio.");
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

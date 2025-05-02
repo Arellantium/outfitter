@@ -130,7 +130,6 @@
       min-height: 200px;
     }
 
-    /* New Style for Balance */
     .balance {
       display: flex;
       justify-content: space-between;
@@ -142,6 +141,15 @@
       margin-top: 10px;
     }
 
+    img.post-img {
+      width: 200px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .post-item {
+      margin-bottom: 30px;
+    }
   </style>
 </head>
 
@@ -185,6 +193,54 @@
   </div>
 
   <script>
+    const API_BASE = "http://localhost:8000";
+    const token = localStorage.getItem("token");
+
+    //if (!token) {
+    //  alert("Non sei loggato. Verrai reindirizzato.");
+    //  window.location.href = "login.html";
+    //}
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(`${API_BASE}/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const user = await res.json();
+
+        document.querySelector(".info h2").textContent = `@${user.username}`;
+        document.getElementById("balance-amount").innerText = user.guadagni_totali?.toFixed(2) || "0";
+
+        const [followers, following] = await Promise.all([
+          fetch(`${API_BASE}/social/followers/${user.id}`).then(r => r.json()),
+          fetch(`${API_BASE}/social/following/${user.id}`).then(r => r.json())
+        ]);
+        document.querySelector(".info p").textContent =
+          `${followers.followers.length} followers · ${following.following.length} following`;
+
+        // Carica i post dell'utente
+        const postRes = await fetch(`${API_BASE}/posts`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const allPosts = await postRes.json();
+        const userPosts = allPosts.filter(p => p.author === user.username);
+
+        const postsDiv = document.getElementById("posts");
+        postsDiv.innerHTML = userPosts.length
+          ? userPosts.map(p => `
+            <div class="post-item">
+              <img class="post-img" src="${API_BASE}/${p.image_url}" alt="Post Image" />
+              <p><strong>${p.description}</strong><br>
+              <small>${new Date(p.created_at).toLocaleString()}</small></p>
+            </div>
+          `).join("")
+          : "No posts yet.";
+
+      } catch (err) {
+        console.error("Errore durante il caricamento del profilo:", err);
+      }
+    }
+
     function switchTab(tabName) {
       const tabs = ['wardrobe', 'posts', 'saved', 'bought'];
       tabs.forEach(name => {
@@ -196,19 +252,7 @@
       event.target.classList.add('active');
     }
 
-    // Simulazione di un acquisto che aggiorna il saldo
-    function updateBalance(amount) {
-      const balanceAmountElement = document.getElementById('balance-amount');
-      let currentBalance = parseFloat(balanceAmountElement.innerText);
-      currentBalance += amount;  // Aggiorna il saldo
-      balanceAmountElement.innerText = currentBalance.toFixed(2);  // Formatta il saldo
-    }
-
-    // Esegui l'aggiornamento del saldo quando l'utente compra qualcosa
-    setTimeout(() => {
-      updateBalance(50);  // Aggiungi 50 € al saldo per esempio
-    }, 3000); // Dopo 3 secondi, per esempio
+    window.onload = loadProfile;
   </script>
 </body>
-
 </html>
