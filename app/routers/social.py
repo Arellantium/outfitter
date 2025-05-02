@@ -1,87 +1,122 @@
-from fastapi import APIRouter, HTTPException, Form
-from typing import List, Dict
+from fastapi import APIRouter, HTTPException, Form, Depends
+from sqlalchemy.orm import Session
 from datetime import datetime
+
+from app.models import Like, Follow, CommentoProfilo, Post, Utente
+from app.configuration.database import get_db
+from app.services.auth import get_current_user
 
 router = APIRouter(prefix="/social", tags=["Social Interactions"])
 
-# DATABASE FINTI (IN MEMORIA)
-likes_db: Dict[int, int] = {}         # post_id -> numero di likes
-follows_db: Dict[str, List[str]] = {} # user_id -> lista di utenti che segue
-comments_db: Dict[int, List[Dict]] = {} # post_id -> lista dei commenti
+# =========================
+# 1. LIKE / UNLIKE
+# =========================
 
+@router.post("/like/{post_id}")
+def like_post(post_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    # Controlla se il like esiste già
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post non trovato")
 
-# ===========================
-# 1. LIKES
-# ===========================
+    utente = db.query(Utente).filter(Utente.nome == current_user).first()
+    if not utente:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
 
-# Aggiungere un like a un post
-@router.patch("/like/{post_id}")
-async def like_post(post_id: int):
-    likes_db[post_id] = likes_db.get(post_id, 0) + 1
-    return {"message": f"Like added to post {post_id}", "total_likes": likes_db[post_id]}
+    existing_like = db.query(Like).filter_by(post_id=post_id, utente_id=utente.id).first()
+    if existing_like:
+        raise HTTPException(status_code=400, detail="Hai già messo like a questo post")
 
-# Togliere un like da un post
-@router.patch("/unlike/{post_id}")
-async def unlike_post(post_id: int):
-    if post_id in likes_db and likes_db[post_id] > 0:
-        likes_db[post_id] -= 1
-        return {"message": f"Like removed from post {post_id}", "total_likes": likes_db[post_id]}
-    raise HTTPException(status_code=404, detail="Cannot unlike a post with zero likes")
+    like = Like(post_id=post_id, utente_id=utente.id)
+    db.add(like)
+    post.likes += 1
+    db.commit()
+    return {"message": f"Like aggiunto al post {post_id}"}
 
+@router.post("/unlike/{post_id}")
+def unlike_post(post_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post non trovato")
 
-# ===========================
+    utente = db.query(Utente).filter(Utente.nome == current_user).first()
+    like = db.query(Like).filter_by(post_id=post_id, utente_id=utente.id).first()
+
+    if not like:
+        raise HTTPException(status_code=404, detail="Like non trovato")
+
+    db.delete(like)
+    post.likes = max(0, post.likes - 1)
+    db.commit()
+    return {"message": f"Like rimosso dal post {post_id}"}
+
+# =========================
 # 2. FOLLOW / UNFOLLOW
-# ===========================
+# =========================
 
-# Seguire un altro utente
 @router.post("/follow/{user_id}")
-async def follow_user(user_id: str, follower_id: str = Form(...)):
-    if user_id == follower_id:
-        raise HTTPException(status_code=400, detail="You cannot follow yourself.")
+def follow_user(user_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    current = db.query(Utente).filter(Utente.nome == current_user).first()
+    if current.id == user_id:
+        raise HTTPException(status_code=400, detail="Non puoi seguire te stesso")
 
-    follows_db.setdefault(follower_id, [])
+    existing = db.query(Follow).filter_by(follower_id=current.id, seguito_id=user_id).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Segui già questo utente")
 
-    if user_id not in follows_db[follower_id]:
-        follows_db[follower_id].append(user_id)
+    follow = Follow(follower_id=current.id, seguito_id=user_id)
+    db.add(follow)
+    db.commit()
+    return {"message": f"Ora segui l'utente con ID {user_id}"}
 
-    return {"message": f"You are now following {user_id}"}
-
-# Smettere di seguire un utente
 @router.post("/unfollow/{user_id}")
-async def unfollow_user(user_id: str, follower_id: str = Form(...)):
-    if follower_id in follows_db and user_id in follows_db[follower_id]:
-        follows_db[follower_id].remove(user_id)
-        return {"message": f"You unfollowed {user_id}"}
-    raise HTTPException(status_code=404, detail="Follow relationship not found")
+def unfollow_user(user_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    current = db.query(Utente).filter(Utente.nome == current_user).first()
+    follow = db.query(Follow).filter_by(follower_id=current.id, seguito_id=user_id).first()
 
-# Lista follower di un utente
+    if not follow:
+        raise HTTPException(status_code=404, detail="Relazione di follow non trovata")
+
+    db.delete(follow)
+    db.commit()
+    return {"message": f"Hai smesso di seguire l'utente con ID {user_id}"}
+
 @router.get("/followers/{user_id}")
-async def get_followers(user_id: str):
-    followers = [follower for follower, following in follows_db.items() if user_id in following]
-    return {"user_id": user_id, "followers": followers}
+def get_followers(user_id: int, db: Session = Depends(get_db)):
+    followers = db.query(Follow).filter(Follow.seguito_id == user_id).all()
+    follower_ids = [f.follower_id for f in followers]
+    return {"user_id": user_id, "followers": follower_ids}
 
-# Lista utenti seguiti da un utente
 @router.get("/following/{user_id}")
-async def get_following(user_id: str):
-    return {"user_id": user_id, "following": follows_db.get(user_id, [])}
+def get_following(user_id: int, db: Session = Depends(get_db)):
+    following = db.query(Follow).filter(Follow.follower_id == user_id).all()
+    followed_ids = [f.seguito_id for f in following]
+    return {"user_id": user_id, "following": followed_ids}
 
+# =========================
+# 3. COMMENTI PROFILO
+# =========================
 
-# ===========================
-# 3. COMMENTI
-# ===========================
+@router.post("/commento/{destinatario_id}")
+def add_comment(destinatario_id: int, contenuto: str = Form(...), db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    autore = db.query(Utente).filter(Utente.nome == current_user).first()
 
-# Aggiungere un commento a un post
-@router.post("/commento/{post_id}")
-async def add_comment(post_id: int, author: str = Form(...), text: str = Form(...)):
-    comments_db.setdefault(post_id, [])
-    comments_db[post_id].append({
-        "author": author,
-        "text": text,
-        "created_at": datetime.utcnow()
-    })
-    return {"message": f"Comment added to post {post_id}", "comments": comments_db[post_id]}
+    comment = CommentoProfilo(
+        autore_id=autore.id,
+        destinatario_id=destinatario_id,
+        contenuto=contenuto,
+        approvato=True  # o False se vuoi approvazione manuale
+    )
+    db.add(comment)
+    db.commit()
+    return {"message": "Commento aggiunto con successo"}
 
-# Vedere tutti i commenti di un post
-@router.get("/commenti/{post_id}")
-async def get_comments(post_id: int):
-    return {"post_id": post_id, "comments": comments_db.get(post_id, [])}
+@router.get("/commenti/{user_id}")
+def get_comments(user_id: int, db: Session = Depends(get_db)):
+    commenti = db.query(CommentoProfilo).filter(CommentoProfilo.destinatario_id == user_id, CommentoProfilo.approvato == True).all()
+    return {"destinatario_id": user_id, "commenti": [
+        {
+            "autore_id": c.autore_id,
+            "contenuto": c.contenuto
+        } for c in commenti
+    ]}
