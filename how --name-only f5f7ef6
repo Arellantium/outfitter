@@ -1,0 +1,31 @@
+[33mcommit b3059e197b7a1bbc5420aa1eb594360abc5fa8f2[m
+Author: Alessandro Arellano <alessandroarellanoaltuna@gmail.com>
+Date:   Wed Apr 9 12:50:03 2025 +0200
+
+    primo commit
+
+.gitignore
+README.md
+README.txt
+app/__init__.py
+app/config.py
+app/configuration/__init__.py
+app/configuration/settings.py
+app/controllers/__init__.py
+app/main.py
+app/middlewares/__init__.py
+app/middlewares/error_handle.py
+app/models/__init__.py
+app/routers/__init__.py
+app/routers/auth.py
+app/routers/users.py
+app/schemas/TokenRequest.py
+app/schemas/UserCreateRequest.py
+app/schemas/__init__.py
+app/services/auth.py
+app/utils/__init__.py
+app/validators/common_validators.py
+app/views/__init__.py
+requirements.txt
+setup_project.sh
+tools/clean_pycache.py
