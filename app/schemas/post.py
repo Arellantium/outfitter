@@ -1,11 +1,16 @@
 from pydantic import BaseModel
+from typing import Optional
 
-class PostBase(BaseModel):
+class PostOut(BaseModel):
     id: int
-    data_publicazione: str
+    description: str
+    author: str
+    image_url: Optional[str]
+    created_at: str
+    likes: int
     visualizzazioni: int
     stato: str
     visibile: bool
 
     class Config:
-        from_attributes = True  # Questo è necessario per permettere a Pydantic di lavorare con i modelli SQLAlchemy
+        from_attributes = True  # Pydantic v2+, come stai usando correttamente

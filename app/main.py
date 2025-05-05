@@ -5,6 +5,12 @@ from app.configuration.database import engine
 from app.configuration.dependencies_database import get_db
 from app.models.models import Base, Utente
 from app.config import setup_logging
+from app.routers import pagamenti  # ✅ CORRETTA
+from app.routers import outfit, post_foto, social
+
+from .models import *
+
+
 
 setup_logging()
 import logging
@@ -38,6 +44,10 @@ app.middleware("http")(global_error_handler)
 
 app.include_router(auth.router)
 app.include_router(users.router)  
+app.include_router(pagamenti.router)
+app.include_router(outfit.router)
+app.include_router(post_foto.router)
+app.include_router(social.router)
 
 @app.get("/", tags=["home"])
 async def root():

@@ -6,6 +6,6 @@ class UserCreateRequest(BaseModel):
     password: str = Field(..., min_length=6, max_length=20)
     email: str
 
-@validator("email")
-def email_validator(cls, value):
-    return validate_email(value)    
+    @validator("email")
+    def email_validator(cls, value):
+        return validate_email(value)    
