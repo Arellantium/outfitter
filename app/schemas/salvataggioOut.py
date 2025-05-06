@@ -1,8 +1,7 @@
-# app/schemas/acquistoPostOut.py
 from pydantic import BaseModel
 from typing import Optional
 
-class AcquistoPostOut(BaseModel):
+class SalvataggioPostOut(BaseModel):
     id: int
     description: str
     author: str

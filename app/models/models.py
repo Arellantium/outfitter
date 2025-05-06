@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Integer, Float, String, Boolean
 from app.configuration.database import Base
+from sqlalchemy import ForeignKey, DateTime
+from sqlalchemy.orm import relationship
+from datetime import datetime
 
 class Utente(Base):
     __tablename__ = "utente"
@@ -15,10 +18,17 @@ class Post(Base):
     __tablename__ = "post"
    
     id = Column(Integer, primary_key=True, index=True)
-    data_publicazione = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    author = Column(String, nullable=False)
+    image_url = Column(String, nullable=True)
+    created_at = Column(String, nullable=False)  # ISO 8601, esempio: 2025-05-03T11:00:00Z
+    likes = Column(Integer, default=0)
+
+    # Campi social e visibilità
     visualizzazioni = Column(Integer, default=0)
-    stato = Column(String, nullable=False)
-    visibile = Column(Boolean, default=True)    
+    stato = Column(String, default="pubblicato")  # es. "pubblicato", "bozza"
+    visibile = Column(Boolean, default=True)
+  
 
 class Articolo(Base):
     __tablename__ = "articolo"
@@ -89,3 +99,26 @@ class CommentoProfilo(Base):
     approvato = Column(Boolean, default=False)
 
 
+
+
+class Pagamento(Base):
+    __tablename__ = "pagamento"
+
+    id = Column(Integer, primary_key=True, index=True)
+    acquisto_id = Column(Integer, ForeignKey("acquisto.id"), nullable=False)
+    metodo_pagamento = Column(String, nullable=False)  # es. carta, PayPal
+    importo = Column(Float, nullable=False)
+    status = Column(String, default="in attesa")  # in attesa, completato, fallito
+    data_pagamento = Column(DateTime, default=datetime.utcnow)
+
+    # Relazione opzionale (se vuoi recuperare l'acquisto associato)
+    acquisto = relationship("Acquisto", backref="pagamento")
+
+
+
+
+class Salvataggio(Base):
+    __tablename__ = "salvataggio"
+    id = Column(Integer,primary_key=True, index = True)
+    utente_id = Column(Integer,nullable=False)
+    post_id = Column(Integer, nullable=False)

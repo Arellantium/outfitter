@@ -1,8 +1,7 @@
-# app/schemas/acquistoPostOut.py
 from pydantic import BaseModel
 from typing import Optional
 
-class AcquistoPostOut(BaseModel):
+class PostOut(BaseModel):
     id: int
     description: str
     author: str
@@ -14,4 +13,4 @@ class AcquistoPostOut(BaseModel):
     visibile: bool
 
     class Config:
-        from_attributes = True
+        from_attributes = True  # Pydantic v2+, come stai usando correttamente

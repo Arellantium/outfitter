@@ -7,7 +7,7 @@ from app.configuration.dependencies_database import get_db
 from app.models.models import Acquisto, Utente, Outfit, Articolo
 from app.schemas.acquistoCreate import AcquistoCreate
 from app.schemas.acquistoOut import AcquistoOut
-
+from app.services.auth import get_current_user
 
 router = APIRouter()
 
@@ -135,7 +135,8 @@ async def delete_acquisto(
     result = await db.execute(select(Acquisto).where(Acquisto.id == id))
     acquisto = result.scalars().first()
     if acquisto is None:
-        raise HTTPException(status_code=404, detail="Acquisto non trovato")
-
-    await db.delete(acquisto)
-    await db.commit()
+        raise HTTPException(status_code=404, detail="acquisto non trovato")
+    
+    db.delete(acquisto)
+    db.commit()
+    return 
