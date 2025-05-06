@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from app.middlewares.error_handle import global_error_handler
-from app.routers import auth, users  # Importa sia auth che users
+from app.routers import auth, users, acquisto, outfit  # Importa sia auth che users
 
 app = FastAPI()
 
@@ -37,7 +37,9 @@ app.middleware("http")(global_error_handler)
 
 
 app.include_router(auth.router)
-app.include_router(users.router)  
+app.include_router(users.router) 
+app.include_router(acquisto.router)
+app.include_router(outfit.router) 
 
 @app.get("/", tags=["home"])
 async def root():
