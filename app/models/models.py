@@ -113,3 +113,12 @@ class Pagamento(Base):
 
     # Relazione opzionale (se vuoi recuperare l'acquisto associato)
     acquisto = relationship("Acquisto", backref="pagamento")
+
+
+
+
+class Salvataggio(Base):
+    __tablename__ = "salvataggio"
+    id = Column(Integer,primary_key=True, index = True)
+    utente_id = Column(Integer,nullable=False)
+    post_id = Column(Integer, nullable=False)

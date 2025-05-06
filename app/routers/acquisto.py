@@ -5,6 +5,7 @@ from app.models.models import Acquisto, Utente, Outfit, Articolo
 from app.schemas.acquistoCreate import AcquistoCreate
 from app.schemas.acquistoOut import AcquistoOut
 from app.services.auth import get_current_user
+from app.models.models import Post 
 
 router = APIRouter()
 
@@ -40,3 +41,20 @@ def delete_acquisto(id: int, current_username: str = Depends(get_current_user), 
     db.delete(acquisto)
     db.commit()
     return 
+
+# Ottieni tutti i post acquistati da un utente
+@router.get("/acquisti/bought", response_model=list[AcquistoPostOut], tags=["acquisti"])
+def get_bought_posts(current_username: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    user = db.query(Utente).filter(Utente.nome == current_username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+
+    # Outfit -> Post, via Outfit.post_id
+    query = (
+        db.query(Post)
+        .join(Outfit, Outfit.post_id == Post.id)
+        .join(Acquisto, Acquisto.outfit_id == Outfit.id)
+        .filter(Acquisto.utente_id == user.id)
+    )
+
+    return query.all()

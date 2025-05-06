@@ -6,7 +6,7 @@ import shutil, os
 from app.configuration.dependencies_database import get_db
 from app.models.models import Post as PostModel, NascondiPost, Utente
 from app.services.auth import get_current_user
-from app.schemas.post import PostOut
+from app.schemas.postOut import PostOut
 from app.schemas.common import MessageResponse
 
 router = APIRouter(prefix="/posts", tags=["Posts"])

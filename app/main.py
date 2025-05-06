@@ -7,6 +7,7 @@ from app.models.models import Base, Utente
 from app.config import setup_logging
 from app.routers import pagamenti  # ✅ CORRETTA
 from app.routers import outfit, post_foto, social
+from app.routers import saved, search
 
 from .models import *
 
@@ -48,6 +49,10 @@ app.include_router(pagamenti.router)
 app.include_router(outfit.router)
 app.include_router(post_foto.router)
 app.include_router(social.router)
+app.include_router(saved.router)
+app.include_router(search.router)
+
+
 
 @app.get("/", tags=["home"])
 async def root():
