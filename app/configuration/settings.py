@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     # JWT
     SECRET_KEY: str = "la-tua-chiave-segreta"  # Dovresti usare una chiave sicura in produzione
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 300
 
     # Database
     # DB_URL: str

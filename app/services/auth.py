@@ -47,3 +47,28 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     Dependency per ottenere l'utente corrente a partire dal token.
     """
     return verify_token(token)
+
+# Funzione per ottenere l'utente corrente dal token JWT
+def get_current_user_name(token: str):
+    try:
+        # Decodifica il token JWT usando la chiave segreta
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        
+        # Estrai l'utente dal campo 'sub'
+        username: str = payload.get("sub")
+        
+        # Se 'sub' non esiste, solleva un'eccezione
+        if username is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Token non valido, l'utente non è stato trovato nel token"
+            )
+        
+        # Restituisce il nome dell'utente (username)
+        return username
+    except JWTError:
+        raise HTTPException(
+            status_code=401,
+            detail="Token non valido o scaduto",
+            headers={"WWW-Authenticate": "Bearer"},
+        )

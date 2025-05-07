@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, status
-from app.services.auth import get_current_user
+from fastapi import APIRouter, HTTPException, Depends, status, Header
+from app.services.auth import get_current_user, get_current_user_name
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -38,7 +38,8 @@ def read_protected(current_user: str = Depends(get_current_user)):
         "solo i campi pubblici. L'accesso a questa risorsa non richiede autenticazione."
     ),
 )
-async def get_utenti(db: AsyncSession = Depends(get_db)):
+async def get_utenti(current_username: str = Depends(get_current_user),
+                    db: AsyncSession = Depends(get_db)):
     """
     Recupera l'elenco completo degli utenti presenti nel database.
 
@@ -117,7 +118,8 @@ Possibili errori:
 )
 async def get_me(
     current_username: str = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    authorization: str = Header(...)
 ):
     """
     Recupera l'utente attualmente autenticato tramite il nome utente derivato dal token JWT.
@@ -126,7 +128,15 @@ async def get_me(
     :param db: sessione asincrona del database
     :return: oggetto UtenteOut contenente le informazioni dell'utente
     """
-    result = await db.execute(select(Utente).where(Utente.nome == current_username))
+
+    username = None
+
+    if authorization.startswith("Bearer "):
+        username =  authorization.split(" ")[1]  # Restituisce solo la parte del token
+    else:
+        raise HTTPException(status_code=403, detail="Invalid authorization header")
+
+    result = await db.execute(select(Utente).where(Utente.nome == get_current_user_name(username)))
     user = result.scalars().first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
