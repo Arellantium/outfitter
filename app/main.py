@@ -51,8 +51,6 @@ app.include_router(post_foto.router)
 app.include_router(social.router)
 app.include_router(saved.router)
 app.include_router(search.router)
-
-
 app.include_router(acquisto.router)
 app.include_router(outfit.router) 
 
