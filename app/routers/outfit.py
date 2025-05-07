@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.configuration.dependencies_database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.models import Outfit
-from app.schemas.outfitCreate import OutfitCreate
+from app.models.models import Outfit, Articolo
+from app.schemas.outfitCreate import OutfitCreate, ArticoloCreate
 from app.schemas.outfitOut import OutfitOut
 from app.services.auth import get_current_user
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import select, delete
+
 
 router = APIRouter()
 
@@ -36,8 +37,29 @@ async def create_outfit(
     :param db: sessione DB asincrona
     :return: outfit creato
     """
-    new_outfit = Outfit(**outfit.dict())
+    new_outfit = Outfit(
+            post_id=outfit.post_id,
+            nome=outfit.nome,
+            sconto_percentuale=outfit.sconto_percentuale or 0,
+            prezzo_finale=outfit.prezzo_finale,
+            venduto=outfit.venduto
+        )
+
     db.add(new_outfit)
+    await db.flush()  # otteniamo new_outfit.id
+
+      # 2. Crea gli articoli associati, se presenti
+    for articolo_data in outfit.articoli:
+        nuovo_articolo = Articolo(
+            post_id=outfit.post_id,
+            nome=articolo_data.nome,
+            taglia=articolo_data.taglia,
+            condizione=articolo_data.condizione,
+            prezzo=articolo_data.prezzo,
+            venduto=articolo_data.venduto,
+            outfit_id=new_outfit.id  # 🔗 associazione
+        )
+        db.add(nuovo_articolo)
     await db.commit()
     await db.refresh(new_outfit)
     return new_outfit
@@ -74,10 +96,10 @@ async def get_outfit(id: int, db: AsyncSession = Depends(get_db)):
     "/outfit/{id}",
     response_model=OutfitOut,
     tags=["outfit"],
-    summary="Aggiorna un outfit esistente",
+    summary="Aggiorna un outfit esistente con eventuali articoli",
     description="""
 Aggiorna un outfit già esistente identificato dal suo ID.  
-Tutti i campi sono opzionali.  
+Se viene fornita una lista di articoli, quelli esistenti saranno cancellati e sostituiti.  
 **Errori gestiti:**
 - `404`: outfit non trovato
 - `422`: errore di validazione
@@ -90,23 +112,34 @@ async def update_outfit(
     current_username: str = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """
-    Aggiorna un outfit esistente.
-
-    :param id: ID dell'outfit
-    :param outfit_update: dati aggiornati
-    :param current_username: utente autenticato
-    :param db: sessione DB asincrona
-    :return: oggetto aggiornato
-    """
     result = await db.execute(select(Outfit).where(Outfit.id == id))
     outfit = result.scalars().first()
 
     if outfit is None:
         raise HTTPException(status_code=404, detail="Outfit not found")
 
-    for key, value in outfit_update.dict(exclude_unset=True).items():
+    # ✅ Aggiorna i campi dell'outfit (escludendo 'articoli' dalla sovrascrittura diretta)
+    update_data = outfit_update.dict(exclude_unset=True, exclude={"articoli"})
+    for key, value in update_data.items():
         setattr(outfit, key, value)
+
+    # 🔄 Se sono stati forniti nuovi articoli, elimina i precedenti e ricrea
+    if outfit_update.articoli:
+        # 1. Elimina articoli associati esistenti
+        await db.execute(delete(Articolo).where(Articolo.outfit_id == id))
+
+        # 2. Aggiungi i nuovi articoli
+        for articolo_data in outfit_update.articoli:
+            nuovo_articolo = Articolo(
+                post_id=outfit.post_id,
+                nome=articolo_data.nome,
+                taglia=articolo_data.taglia,
+                condizione=articolo_data.condizione,
+                prezzo=articolo_data.prezzo,
+                venduto=articolo_data.venduto,
+                outfit_id=id
+            )
+            db.add(nuovo_articolo)
 
     await db.commit()
     await db.refresh(outfit)
@@ -179,3 +212,44 @@ async def list_outfits(
 
     result = await db.execute(stmt)
     return result.scalars().all()
+
+
+@router.patch(
+    "/outfit/{id}/articoli",
+    tags=["outfit"],
+    summary="Aggiorna solo gli articoli di un outfit",
+    description="""
+Aggiorna la lista di articoli associati a un outfit, senza toccare i dati dell’outfit.  
+Sostituisce completamente i vecchi articoli con i nuovi forniti.
+"""
+)
+async def aggiorna_articoli_outfit(
+    id: int,
+    nuovi_articoli: List[ArticoloCreate],
+    current_username: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    # Verifica che l'outfit esista
+    result = await db.execute(select(Outfit).where(Outfit.id == id))
+    outfit = result.scalars().first()
+    if not outfit:
+        raise HTTPException(status_code=404, detail="Outfit non trovato")
+
+    # Elimina articoli esistenti associati all'outfit
+    await db.execute(delete(Articolo).where(Articolo.outfit_id == id))
+
+    # Crea nuovi articoli e li collega all'outfit
+    for articolo_data in nuovi_articoli:
+        nuovo_articolo = Articolo(
+            nome=articolo_data.nome,
+            taglia=articolo_data.taglia,
+            condizione=articolo_data.condizione,
+            prezzo=articolo_data.prezzo,
+            venduto=articolo_data.venduto,
+            post_id=outfit.post_id,
+            outfit_id=outfit.id
+        )
+        db.add(nuovo_articolo)
+
+    await db.commit()
+    return {"msg": f"{len(nuovi_articoli)} articoli aggiornati per outfit ID {id}"}

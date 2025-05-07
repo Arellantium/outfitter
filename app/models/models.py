@@ -41,6 +41,9 @@ class Articolo(Base):
     prezzo = Column(Float, default=0)
     venduto = Column(Boolean, default=False)
 
+    outfit_id = Column(Integer, ForeignKey("outfit.id", ondelete="SET NULL"), nullable=True)  # 🔗 relazione
+
+
 class Outfit(Base):
     __tablename__ = "outfit"
 
@@ -50,6 +53,8 @@ class Outfit(Base):
     sconto_percentuale = Column(Integer,default=0)
     prezzo_finale = Column(Float,default=0)
     venduto = Column(Boolean, default=False)
+
+    articoli = relationship("Articolo", backref="outfit", cascade="all, delete", lazy="selectin")  # 🔁
 
 class Acquisto(Base):
     __tablename__ = "acquisto"

@@ -1,13 +1,26 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
-class OutfitOut(BaseModel):
+class ArticoloOut(BaseModel):
     id: int
-    post_id: Optional[int]
     nome: str
-    sconto_percentuale: int
-    prezzo_finale: float
+    taglia: str
+    condizione: str
+    prezzo: float
     venduto: bool
 
     class Config:
-        from_attributes= True
+        from_attributes = True
+
+
+class OutfitOut(BaseModel):
+    id: int
+    post_id: int
+    nome: str
+    sconto_percentuale: float
+    prezzo_finale: float
+    venduto: bool
+    articoli: List[ArticoloOut] = []  # ⬅️ Articoli associati all'outfit
+
+    class Config:
+        from_attributes = True
