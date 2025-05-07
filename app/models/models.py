@@ -99,6 +99,15 @@ class CommentoProfilo(Base):
     approvato = Column(Boolean, default=False)
 
 
+class MetodoPagamento(Base):
+    __tablename__ = "metodo_pagamento"
+
+    id = Column(Integer, primary_key=True, index=True)
+    utente_id = Column(Integer, nullable=False)
+    intestatario = Column(String, nullable=False)
+    numero_carta = Column(String, nullable=False)  # Salvata mascherata
+    scadenza = Column(String, nullable=False)
+    circuito = Column(String, nullable=False)
 
 
 class Pagamento(Base):
@@ -122,3 +131,19 @@ class Salvataggio(Base):
     id = Column(Integer,primary_key=True, index = True)
     utente_id = Column(Integer,nullable=False)
     post_id = Column(Integer, nullable=False)
+
+
+class ShippingInfo(Base):
+    __tablename__ = "shipping_info"
+
+    id = Column(Integer, primary_key=True, index=True)
+    utente_id = Column(Integer, ForeignKey("utente.id"), nullable=False)
+    full_name = Column(String, nullable=False)
+    address = Column(String, nullable=False)
+    city = Column(String, nullable=False)
+    postal_code = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
+
+    utente = relationship("Utente", backref="shipping_infos")
+
