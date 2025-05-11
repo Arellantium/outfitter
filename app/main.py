@@ -8,6 +8,8 @@ from app.config import setup_logging
 from app.routers import pagamenti  # ✅ CORRETTA
 from app.routers import outfit, post_foto, social
 from app.routers import saved, search
+from fastapi.middleware.cors import CORSMiddleware
+
 
 from .models import *
 
@@ -23,6 +25,14 @@ from app.middlewares.error_handle import global_error_handler
 from app.routers import auth, users, acquisto, outfit  # Importa sia auth che users
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # oppure ["*"] per qualsiasi origine
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def on_startup():
