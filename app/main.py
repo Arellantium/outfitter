@@ -6,8 +6,8 @@ from app.configuration.dependencies_database import get_db
 from app.models.models import Base, Utente
 from app.config import setup_logging
 from app.routers import pagamenti  # ✅ CORRETTA
-from app.routers import outfit, post_foto, social
-from app.routers import saved, search
+from app.routers import outfit, post_foto, social, metodi_pagamento
+from app.routers import saved, search, shipping
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -63,6 +63,8 @@ app.include_router(saved.router)
 app.include_router(search.router)
 app.include_router(acquisto.router)
 app.include_router(outfit.router) 
+app.include_router(metodi_pagamento.router)
+app.include_router(shipping.router)
 
 @app.get("/", tags=["home"])
 async def root():

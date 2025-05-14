@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { FaFacebook, FaGoogle, FaTwitter } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
+
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8006/login', {
+      const response = await fetch('http://localhost:8006/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -19,9 +23,26 @@ function Login() {
         body: JSON.stringify({ username, password })
       });
 
+      if (!response.ok) {
+        const errorText = await response.text(); // per loggare eventuale HTML o testo
+        console.error('Errore HTTP:', response.status, errorText);
+        alert(`Errore: ${response.status} - ${response.statusText}`);
+        return;
+      }
+   
       const data = await response.json();
-      console.log('Login avvenuto con successo:', data);
-      alert('Accesso effettuato!');
+      console.log('Risposta del server:', data);
+
+      // ✅ Salvataggio token
+      if (data.access_token && data.token_type) {
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('token_type', data.token_type);
+        alert('Accesso effettuato!');
+        navigate('/createPost');
+      } else {
+        console.warn('Token non presente nella risposta:', data);
+        alert('Errore: token non ricevuto.');
+      }
     } catch (error) {
       console.error('Errore durante il login:', error);
       alert('Errore durante il login.');
