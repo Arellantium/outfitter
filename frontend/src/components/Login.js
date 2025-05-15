@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { FaFacebook, FaGoogle, FaTwitter } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import './Login.css';
 
 
 function Login() {
@@ -38,7 +39,7 @@ function Login() {
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('token_type', data.token_type);
         alert('Accesso effettuato!');
-        navigate('/createPost');
+        navigate('/');
       } else {
         console.warn('Token non presente nella risposta:', data);
         alert('Errore: token non ricevuto.');
