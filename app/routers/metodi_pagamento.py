@@ -1,27 +1,30 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.configuration.database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.configuration.dependencies_database import get_db
 from app.services.auth import get_current_user
 from app.models.models import MetodoPagamento, Utente
 from app.schemas.metodoPagamentoCreate import MetodoPagamentoCreate
 from app.schemas.metodoPagamentoOut import MetodoPagamentoOut
+from sqlalchemy import select
 
-router = APIRouter(prefix="/metodi-pagamento", tags=["Metodi Pagamento"])
+router = APIRouter(prefix="/metodi-pagamento", tags=["Metodi di Pagamento"])
 
 # POST /metodi-pagamento
 @router.post("/", response_model=MetodoPagamentoOut)
-def aggiungi_metodo_pagamento(
+async def aggiungi_metodo_pagamento(
     metodo: MetodoPagamentoCreate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user)
 ):
-    utente = db.query(Utente).filter(Utente.nome == current_user).first()
+    result = await db.execute(select(Utente).where(Utente.nome == current_user))
+    utente = result.scalars().first()
+
     if not utente:
         raise HTTPException(status_code=404, detail="Utente non trovato")
-
-    # Maschera il numero carta per sicurezza
+    
     carta_mascherata = f"**** **** **** {metodo.numero_carta[-4:]}"
-
+ 
     nuovo_metodo = MetodoPagamento(
         utente_id=utente.id,
         intestatario=metodo.intestatario,
@@ -31,29 +34,39 @@ def aggiungi_metodo_pagamento(
     )
 
     db.add(nuovo_metodo)
-    db.commit()
-    db.refresh(nuovo_metodo)
+    await db.commit()
+    await db.refresh(nuovo_metodo)
     return nuovo_metodo
 
 # GET /metodi-pagamento
 @router.get("/", response_model=list[MetodoPagamentoOut])
-def get_metodi_pagamento(
-    db: Session = Depends(get_db),
+async def get_metodi_pagamento(
+    db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user)
 ):
-    utente = db.query(Utente).filter(Utente.nome == current_user).first()
+    result = await db.execute(select(Utente).where(Utente.nome == current_user))
+    utente = result.scalars().first()
+
     if not utente:
         raise HTTPException(status_code=404, detail="Utente non trovato")
 
-    metodi = db.query(MetodoPagamento).filter_by(utente_id=utente.id).all()
+    result = await db.execute(select(MetodoPagamento).where(MetodoPagamento.utente_id == utente.id))
+    metodi = result.scalars().all()
     return metodi
 
 # DELETE /metodi-pagamento/{id}
 @router.delete("/{id}")
-def delete_metodo_pagamento(id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
-    metodo = db.query(MetodoPagamento).filter_by(id=id).first()
+async def delete_metodo_pagamento(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: str = Depends(get_current_user)
+):
+    result = await db.execute(select(MetodoPagamento).where(MetodoPagamento.id == id))
+    metodo = result.scalars().first()
+
     if not metodo:
         raise HTTPException(status_code=404, detail="Metodo di pagamento non trovato")
-    db.delete(metodo)
-    db.commit()
+
+    await db.delete(metodo)
+    await db.commit()
     return {"message": "Metodo di pagamento eliminato"}
