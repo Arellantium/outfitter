@@ -38,7 +38,6 @@ function Login() {
       if (data.access_token && data.token_type) {
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('token_type', data.token_type);
-        alert('Accesso effettuato!');
         navigate('/');
       } else {
         console.warn('Token non presente nella risposta:', data);

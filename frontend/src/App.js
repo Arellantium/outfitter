@@ -16,6 +16,7 @@ function App() {
           path="/"
           element={
             isAuthenticated ? (
+              alert('Accesso effettuato!'),
               <DashboardPage />
             ) : (
               <Navigate to="/login" replace />
