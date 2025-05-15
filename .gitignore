@@ -33,3 +33,7 @@ dist/
 # Altri file temporanei
 .DS_Store
 Thumbs.db
+
+# ReactJS
+
+node_modules/

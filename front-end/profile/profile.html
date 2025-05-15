@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { background-color: #f4f4f4; color: #333; padding: 20px; }
+    .container { max-width: 1000px; margin: auto; background-color: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; }
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-btn { background-color: #f0f0f0; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    .dropdown-content { display: none; position: absolute; right: 0; background-color: #fff; min-width: 200px; box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden; z-index: 1; }
+    .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; transition: background-color 0.2s; }
+    .dropdown-content a:hover { background-color: #f0f0f0; }
+    .dropdown:hover .dropdown-content { display: block; }
+    .profile { display: flex; align-items: center; margin-top: 30px; }
+    .avatar { width: 100px; height: 100px; border-radius: 50%; background-color: #ccc; }
+    .info { margin-left: 20px; }
+    .info h2 { font-size: 24px; font-weight: 600; }
+    .info p { margin-top: 5px; font-size: 16px; color: #666; }
+    .tabs { display: flex; margin-top: 30px; gap: 20px; }
+    .tab { padding: 10px 20px; background-color: #e9e9e9; border-radius: 20px; cursor: pointer; transition: background-color 0.3s; }
+    .tab:hover, .tab.active { background-color: #333; color: #fff; }
+    .content { margin-top: 30px; min-height: 200px; }
+    .balance { display: flex; justify-content: space-between; padding: 10px 15px; font-weight: 600; background-color: #f0f0f0; border-radius: 10px; cursor: pointer; margin-top: 10px; }
+    img.post-img { width: 200px; border-radius: 12px; margin-bottom: 10px; }
+    .post-item { margin-bottom: 30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="logo"><strong>stAIlist</strong></div>
+      <div class="dropdown">
+        <button class="dropdown-btn">Menu ▾</button>
+        <div class="dropdown-content">
+          <a href="profile.html">Profile</a>
+          <a href="orders.html">My Orders</a>
+          <a href="balance.html" id="balance-link">Balance <span id="balance-amount">0</span> €</a>
+          <a href="settings.html">Settings</a>
+          <a href="shipping.html">Shipping</a>
+          <a href="payments.html">Payments</a>
+          <a href="logout.html">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="avatar" id="avatar-img"></div>
+      <div class="info">
+        <h2>@username</h2>
+        <p>0 followers · 0 following</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('wardrobe')">Wardrobe</div>
+      <div class="tab" onclick="switchTab('posts')">Posts</div>
+      <div class="tab" onclick="switchTab('saved')">Saved</div>
+      <div class="tab" onclick="switchTab('bought')">Bought</div>
+    </div>
+
+    <div id="wardrobe" class="content">No items in wardrobe.</div>
+    <div id="posts" class="content" style="display:none">No posts yet.</div>
+    <div id="saved" class="content" style="display:none">No saved items.</div>
+    <div id="bought" class="content" style="display:none">No purchases yet.</div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8000";
+    const token = localStorage.getItem("token");
+
+    async function loadProfile() {
+      if (!token) return;
+
+      const res = await fetch(`${API_BASE}/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const user = await res.json();
+      document.querySelector(".info h2").textContent = `@${user.nome}`;
+      document.getElementById("balance-amount").innerText = user.guadagni_totali?.toFixed(2) || "0";
+      document.getElementById("avatar-img").style.backgroundImage = user.avatar_url ? `url(${API_BASE}/${user.avatar_url})` : "";
+
+      const [followers, following] = await Promise.all([
+        fetch(`${API_BASE}/social/followers/${user.id}`).then(r => r.json()),
+        fetch(`${API_BASE}/social/following/${user.id}`).then(r => r.json())
+      ]);
+      document.querySelector(".info p").textContent = `${followers.followers.length} followers · ${following.following.length} following`;
+
+      const wardrobeRes = await fetch(`${API_BASE}/outfit/by_user/${user.id}`);
+      const wardrobe = await wardrobeRes.json();
+      document.getElementById("wardrobe").innerHTML = wardrobe.length ?
+        wardrobe.map(o => `<div><strong>${o.nome}</strong> – €${o.prezzo_finale}</div>`).join("") : "No items in wardrobe.";
+
+      const postRes = await fetch(`${API_BASE}/posts`, { headers: { Authorization: `Bearer ${token}` } });
+      const allPosts = await postRes.json();
+      const userPosts = allPosts.filter(p => p.author === user.nome);
+      document.getElementById("posts").innerHTML = userPosts.length ?
+        userPosts.map(p => `
+          <div class="post-item">
+            <img class="post-img" src="${API_BASE}/${p.image_url}" alt="Post Image" />
+            <p><strong>${p.description}</strong><br><small>${new Date(p.created_at).toLocaleString()}</small></p>
+          </div>
+        `).join("") : "No posts yet.";
+
+      const boughtRes = await fetch(`${API_BASE}/acquisti/miei`, { headers: { Authorization: `Bearer ${token}` } });
+      const acquisti = await boughtRes.json();
+      document.getElementById("bought").innerHTML = acquisti.length ?
+        acquisti.map(a => `<div>Acquisto #${a.id} – €${a.prezzo_pagato}</div>`).join("") : "No purchases yet.";
+    }
+
+    function switchTab(tabName) {
+      const tabs = ['wardrobe', 'posts', 'saved', 'bought'];
+      tabs.forEach(name => {
+        document.getElementById(name).style.display = name === tabName ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    window.onload = loadProfile;
+  </script>
+
+</body>
+</html>

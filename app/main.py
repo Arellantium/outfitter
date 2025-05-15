@@ -5,6 +5,15 @@ from app.configuration.database import engine
 from app.configuration.dependencies_database import get_db
 from app.models.models import Base, Utente
 from app.config import setup_logging
+from app.routers import pagamenti  # ✅ CORRETTA
+from app.routers import outfit, post_foto, social, metodi_pagamento
+from app.routers import saved, search, shipping
+from fastapi.middleware.cors import CORSMiddleware
+
+
+from .models import *
+
+
 
 setup_logging()
 import logging
@@ -13,9 +22,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 from app.middlewares.error_handle import global_error_handler
-from app.routers import auth, users  # Importa sia auth che users
+from app.routers import auth, users, acquisto, outfit  # Importa sia auth che users
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # oppure ["*"] per qualsiasi origine
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def on_startup():
@@ -37,7 +54,17 @@ app.middleware("http")(global_error_handler)
 
 
 app.include_router(auth.router)
-app.include_router(users.router)  
+app.include_router(users.router) 
+app.include_router(pagamenti.router)
+app.include_router(outfit.router)
+app.include_router(post_foto.router)
+app.include_router(social.router)
+app.include_router(saved.router)
+app.include_router(search.router)
+app.include_router(acquisto.router)
+app.include_router(outfit.router) 
+app.include_router(metodi_pagamento.router)
+app.include_router(shipping.router)
 
 @app.get("/", tags=["home"])
 async def root():

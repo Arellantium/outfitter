@@ -1,0 +1,39 @@
+.shipping-container {
+    max-width: 1100px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .card {
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .card:hover {
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2) !important;
+  }
+  
+ 
+  .shipping-address-item {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .shipping-address-item:last-child {
+    border-bottom: none;
+  }
+  
+  
+  
+  .text-primary {
+    color: #dc3545 !important; /* rosso anche per testi evidenziati */
+  }
+  
+  @media (max-width: 767.98px) {
+    .shipping-container .card .card-body {
+      padding: 1.5rem !important;
+    }
+    .shipping-container h2 {
+      font-size: 1.5rem;
+    }
+  }

@@ -1,0 +1,25 @@
+.stat-card {
+    min-height: 120px;
+    border-radius: 8px;
+  }
+  
+  .icon-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  
