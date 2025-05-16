@@ -68,7 +68,7 @@ const NavbarApp = () => {
             <FaUserCircle
               size={20}
               className="nav-icon"
-              onClick={() => navigate('/profilo')}
+              onClick={() => navigate('/chatPage')}
               style={{ cursor: 'pointer' }}
             />
             <FaLock size={18} className="nav-icon" />

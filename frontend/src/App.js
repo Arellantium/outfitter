@@ -6,6 +6,9 @@ import Payments from './components/Payments';
 import Shipping from './components/Shipping';
 import CreatePost from './components/CreatePost.js';
 import DashboardPage from './components/Dashboard'; 
+import ChatPage from './components/ChatPage.js';
+import LandingPage from './components/LandingPage.js';
+
 function App() {
   const token = localStorage.getItem('access_token');
   const isAuthenticated = !!token;
@@ -25,6 +28,7 @@ function App() {
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/chatPage" element={<ChatPage />} />
       </Routes>
     </Router>
   );
