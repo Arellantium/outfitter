@@ -27,7 +27,7 @@ const LandingPage = () => {
                 </p>
                 <div className="ai-shopper-button-group">
                     {/* Modificato button con Link */}
-                    <Link to="/chat" className="btn btn-primary-ai">Get Started</Link>
+                    <Link to="/chat" className="btn-ai btn-primary-ai">Get Started</Link>
                 </div>
 
                 <div className="ai-shopper-suggestions">
