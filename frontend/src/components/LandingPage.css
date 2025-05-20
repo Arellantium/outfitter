@@ -1,24 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+/* LandingPage.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
 
 :root {
-    --bg-color: #FAF8F1; /* Bianco crema / Avorio molto chiaro */
-    --text-color-main: #5D4037; /* Marrone scuro caldo (per testo principale) */
-    --primary-accent: #CAA870; /* Oro elegante (Soft Gold) */
-    --primary-accent-darker: #B08D57; /* Oro più scuro per hover */
-    
-    --card-bg: #FFFFFF; /* Bianco puro per le card */
-    --card-text-color: var(--text-color-main); /* Testo scuro su card */
-    --card-border-color: rgba(202, 168, 112, 0.5); /* Bordo dorato tenue per card */
-    --card-shadow: rgba(0, 0, 0, 0.07);
-
-    --navbar-border: rgba(202, 168, 112, 0.6); /* Bordo dorato più visibile per navbar */
-    --text-on-accent: #FFFDF5; /* Testo molto chiaro per bottoni dorati */
-
-    --font-display: 'Playfair Display', serif; /* Per titoli più eleganti */
+    /* Palette "Fashion" come da te fornita */
+    --bg-color: #FAF8F1; 
+    --text-color-main: #5D4037; 
+    --primary-accent: #CAA870; 
+    --primary-accent-darker: #B08D57; 
+    --card-bg: #FFFFFF; 
+    --card-text-color: var(--text-color-main); 
+    --card-border-color: rgba(202, 168, 112, 0.3); /* Bordo più tenue */
+    --card-shadow: rgba(93, 64, 55, 0.08); /* Ombra più calda e sottile */
+    --navbar-border: rgba(202, 168, 112, 0.5); 
+    --text-on-accent: #FFFDF5; 
+    --font-display: 'Playfair Display', serif;
     --font-body: 'Poppins', sans-serif;
 }
 
-body {
+/* Reset di base e stile corpo se non già globale */
+body.landing-page-body, html.landing-page-html { /* Applica solo se necessario, o integra nel tuo CSS globale */
     margin: 0;
     background-color: var(--bg-color);
     color: var(--text-color-main);
@@ -32,293 +32,261 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 1rem;
+    padding: 0; /* Rimosso padding, gestito da sezioni interne */
     box-sizing: border-box;
-    position: relative;
+    position: relative; /* Per il bottone flottante */
 }
 
 .ai-shopper-navbar {
     width: 100%;
-    max-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.5rem; /* Aumentato padding navbar */
-    margin-bottom: 4rem; 
+    padding: 1.2rem 2.5rem; /* Padding Navbar */
+    background-color: rgba(255, 255, 255, 0.8); /* Sfondo leggermente trasparente */
+    backdrop-filter: blur(10px); /* Effetto blur per navbar moderna */
     border-bottom: 1px solid var(--navbar-border);
-    z-index: 1;
+    position: sticky; /* Navbar appiccicosa */
+    top: 0;
+    z-index: 1000; /* Sopra il resto */
 }
 
 .ai-shopper-navbar .nav-brand-hint {
-    font-family: var(--font-display); /* Font elegante per il brand */
-    font-size: 2rem; 
+    font-family: var(--font-display);
+    font-size: 2.2rem; 
     color: var(--primary-accent);
     font-weight: 700;
+    text-decoration: none; /* Se fosse un Link */
 }
 
 .ai-shopper-navbar .nav-item {
     margin-left: 2rem; 
-    font-size: 1rem;
+    font-size: 1rem; /* Dimensione standard per item navbar */
+    font-weight: 500; /* Leggermente più bold del testo normale */
     color: var(--text-color-main);
-    opacity: 0.8;
+    opacity: 0.9;
     cursor: pointer;
-    transition: color 0.3s ease, opacity 0.3s ease, border-bottom-color 0.3s ease;
-    padding-bottom: 0.5rem; 
-    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, opacity 0.2s ease;
+    text-decoration: none; /* Per i Link */
+    display: inline-flex; /* Per allineare icona e testo */
+    align-items: center;
 }
 
-.ai-shopper-navbar .nav-item:hover {
-    color: var(--primary-accent);
-    opacity: 1;
-}
-
-.ai-shopper-navbar .nav-item.active {
-    color: var(--primary-accent);
-    border-bottom-color: var(--primary-accent);
-    font-weight: 600;
+.ai-shopper-navbar .nav-item:hover,
+.ai-shopper-navbar .nav-item.active { /* Lo stato active potrebbe non servire più qui */
+    color: var(--primary-accent-darker);
     opacity: 1;
 }
 
 .ai-shopper-main-content {
     text-align: center;
-    max-width: 800px;
+    max-width: 900px; /* Aumentata leggermente la larghezza max */
     width: 100%;
+    padding: 4rem 1.5rem; /* Padding per il contenuto principale */
     z-index: 1;
 }
 
 .ai-shopper-title {
-    font-family: var(--font-display); /* Font elegante per il titolo */
-    font-size: clamp(3rem, 7vw, 4.8rem); 
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 4.5rem); /* Titolo grande e responsivo */
     font-weight: 700;
     color: var(--text-color-main);
-    margin-bottom: 1.5rem;
-    line-height: 1.1;
+    margin-bottom: 1.2rem; /* Ridotto margine */
+    line-height: 1.15;
 }
 
 .ai-shopper-subtitle {
-    font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+    font-size: clamp(1rem, 2.2vw, 1.2rem); /* Sottotitolo responsivo */
     color: var(--text-color-main);
-    opacity: 0.85;
-    max-width: 600px; 
-    margin: 0 auto 3.5rem auto; 
+    opacity: 0.8;
+    max-width: 650px; 
+    margin: 0 auto 3rem auto; 
 }
 
 .ai-shopper-button-group {
     display: flex;
     justify-content: center;
     gap: 1.5rem; 
-    margin-bottom: 5rem; 
+    margin-bottom: 4.5rem; 
 }
 
+/* Stile base per i bottoni, assicurati che le classi corrispondano a quelle nel JSX */
 .btn-ai {
-    padding: 1rem 2.5rem; 
-    border-radius: 30px; /* Angoli più arrotondati per un look più morbido */
+    padding: 0.9rem 2.2rem; 
+    border-radius: 50px; /* Bottone molto arrotondato */
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.25s ease-in-out;
     border: 2px solid transparent; 
     text-transform: uppercase;
-    letter-spacing: 1px; 
+    letter-spacing: 0.8px; 
+    display: inline-flex; /* Per allineare icona e testo */
+    align-items: center;
+    justify-content: center;
+    text-decoration: none; /* Per i Link usati come bottoni */
 }
 
 .btn-primary-ai {
-    background-color: var(--primary-accent);
+    background: linear-gradient(135deg, var(--primary-accent), var(--primary-accent-darker)); /* Gradiente per il bottone */
     color: var(--text-on-accent); 
-    border-color: var(--primary-accent);
+    border-color: transparent; /* Il gradiente copre il bordo */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .btn-primary-ai:hover {
-    background-color: var(--primary-accent-darker);
-    border-color: var(--primary-accent-darker);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    transform: translateY(-4px);
+    background: linear-gradient(135deg, var(--primary-accent-darker), var(--primary-accent));
+    box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+}
+.btn-primary-ai:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-/* Se vuoi un bottone secondario con questa palette: */
-/*
-.btn-secondary-ai {
-    background-color: transparent;
-    border-color: var(--primary-accent);
-    color: var(--primary-accent);
-}
-
-.btn-secondary-ai:hover {
-    background-color: var(--primary-accent);
-    color: var(--text-on-accent); 
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    transform: translateY(-4px);
-}
-*/
 
 .ai-shopper-suggestions {
-    display: flex;
-    justify-content: center;
-    gap: 2.2rem; 
-    flex-wrap: wrap;
-    margin-bottom: 4rem;
+    display: grid; /* Usiamo grid per un layout più robusto */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Colonne responsive */
+    gap: 2rem; 
+    width: 100%;
+    max-width: 1000px; /* Larghezza massima per le card */
+    margin: 0 auto 4rem auto; /* Centra e aggiunge margine inferiore */
 }
 
 .suggestion-card {
     background-color: var(--card-bg);
-    border-radius: 16px; 
-    box-shadow: 0 8px 25px var(--card-shadow); 
-    width: clamp(220px, 26vw, 260px); 
-    padding: 1.5rem; 
+    border-radius: 12px; /* Angoli leggermente meno arrotondati per un look più netto */
+    box-shadow: 0 5px 20px var(--card-shadow); 
+    /* width non più necessario con grid */
+    padding: 1.2rem; 
     text-align: center;
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid var(--card-border-color); 
-    overflow: hidden; /* Per assicurare che l'immagine rispetti i bordi arrotondati */
+    overflow: hidden; 
+    display: flex; /* Per allineare il contenuto verticalmente */
+    flex-direction: column;
 }
 
 .suggestion-card:hover {
-    transform: translateY(-12px) scale(1.04); 
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.1);
+    transform: translateY(-10px); 
+    box-shadow: 0 12px 30px rgba(93, 64, 55, 0.12);
 }
 
 .suggestion-card img {
     width: 100%;
-    height: 220px; 
+    height: 200px; /* Altezza fissa per le immagini delle card */
     object-fit: cover;
-    border-radius: 10px; /* Angoli arrotondati per immagine interna */
-    margin-bottom: 1.5rem;
+    border-radius: 8px; 
+    margin-bottom: 1.2rem;
 }
 
 .suggestion-card p {
     font-weight: 600;
     color: var(--card-text-color); 
-    font-size: 1.2rem; 
-    margin: 0;
+    font-size: 1.1rem; 
+    margin-top: auto; /* Spinge il testo in basso se l'immagine è l'unico altro elemento flessibile */
 }
 
-.ai-chat-button {
+.ai-chat-button { /* Stile per il bottone flottante */
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: var(--primary-accent);
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, var(--primary-accent), var(--primary-accent-darker));
     color: var(--text-on-accent); 
-    padding: 1.2rem; 
+    padding: 1rem; /* Leggermente più piccolo */
     border-radius: 50%;
     border: none;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0,0,0, 0.15);
+    box-shadow: 0 5px 18px rgba(0,0,0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     z-index: 1000;
 }
 
 .ai-chat-button:hover {
-    background-color: var(--primary-accent-darker);
-    transform: scale(1.15) rotate(15deg); 
-    box-shadow: 0 10px 30px rgba(0,0,0, 0.2);
+    background: linear-gradient(135deg, var(--primary-accent-darker), var(--primary-accent));
+    transform: scale(1.1) rotate(10deg); 
+    box-shadow: 0 8px 25px rgba(0,0,0, 0.25);
 }
 
 .ai-chat-button svg {
-    width: 26px; /* Icona leggermente più grande */
-    height: 26px;
-    stroke: var(--text-on-accent); 
+    width: 24px; 
+    height: 24px;
+    stroke: var(--text-on-accent); /* Assicurati che l'SVG usi stroke e non fill se questo è il target */
+    fill: var(--text-on-accent); /* Aggiunto fill per icone che lo usano */
 }
 
-/* Adattamenti responsive (gli stessi di prima, ma con i nuovi colori dovrebbero apparire meglio) */
+/* Adattamenti responsive */
 @media (max-width: 768px) {
     .ai-shopper-navbar {
-        flex-direction: column;
-        gap: 1rem;
-        margin-bottom: 3rem;
-        padding: 1rem;
-    }
-
-    .ai-shopper-navbar div {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.8rem; 
-    }
-    .ai-shopper-navbar .nav-item {
-        margin-left: 0.8rem; 
-        margin-right: 0.8rem;
-        font-size: 0.95rem;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2.5rem;
     }
     .ai-shopper-navbar .nav-brand-hint {
-        font-size: 1.8rem;
+        font-size: 1.9rem;
     }
-
+     .ai-shopper-navbar .nav-item {
+        font-size: 0.9rem;
+        margin-left: 1.5rem;
+    }
+    .ai-shopper-main-content {
+        padding: 2.5rem 1rem;
+    }
     .ai-shopper-suggestions {
-        flex-direction: column;
-        align-items: center;
-        gap: 2.5rem; 
-    }
-
-    .suggestion-card {
-        width: clamp(280px, 85vw, 380px); 
-        padding: 1.2rem;
+        gap: 1.5rem;
     }
     .suggestion-card img {
-        height: 240px;
-    }
-
-
-    .ai-shopper-title {
-        font-size: clamp(2.5rem, 10vw, 3.5rem);
-    }
-
-    .ai-shopper-subtitle {
-        font-size: 1rem;
-        max-width: 90%;
-    }
-
-    .ai-shopper-button-group {
-        flex-direction: column;
-        gap: 1.2rem;
-        align-items: center;
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 4rem;
-    }
-
-    .btn {
-        width: 100%;
-        max-width: 340px; 
-        padding: 0.9rem 1.8rem;
+        height: 180px;
     }
 }
 
 @media (max-width: 480px) {
-    .ai-shopper-title {
-        font-size: clamp(2.2rem, 12vw, 3rem);
+    .ai-shopper-navbar {
+        flex-direction: column; /* Navbar in colonna su mobile */
+        gap: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+    .ai-shopper-navbar div { /* Contenitore dei link */
+        margin-top: 0.5rem;
     }
     .ai-shopper-navbar .nav-brand-hint {
-        font-size: 1.6rem;
+        text-align: center; /* Centra il brand se è da solo sopra */
     }
-    .ai-shopper-navbar .nav-item {
+    .ai-shopper-main-content {
+        padding: 2rem 1rem;
+    }
+    .ai-shopper-title {
+        font-size: clamp(2.2rem, 8vw, 2.8rem);
+    }
+    .ai-shopper-subtitle {
+        font-size: 0.95rem;
+    }
+     .btn-ai {
+        padding: 0.8rem 1.8rem;
         font-size: 0.9rem;
     }
-    
     .ai-shopper-suggestions {
-        gap: 2rem;
+        grid-template-columns: 1fr; /* Una card per riga su mobile molto stretto */
+        gap: 1.8rem;
     }
-
     .suggestion-card {
-        width: clamp(260px, 90vw, 340px);
-        padding: 1rem;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
     .suggestion-card img {
-        height: 200px;
+        height: 160px;
     }
-    .suggestion-card p {
-        font-size: 1.1rem;
-    }
-
     .ai-chat-button {
+        padding: 0.9rem;
         bottom: 20px;
         right: 20px;
-        padding: 1.1rem;
     }
     .ai-chat-button svg {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
     }
 }

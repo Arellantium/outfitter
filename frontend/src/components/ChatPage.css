@@ -1,62 +1,81 @@
-/* Importa le variabili globali se le hai definite in un file separato, 
-   altrimenti copia quelle che ti servono da LandingPage.css */
+/* ChatPage.css */
+/* Se le variabili :root sono globali, non serve ripeterle qui.
+   Altrimenti, assicurati che siano coerenti con LandingPage.css */
 :root {
-    --bg-color: #FAF8F1; 
-    --text-color-main: #5D4037;
-    --primary-accent: #CAA870; 
-    --primary-accent-darker: #B08D57;
-    --card-bg: #FFFFFF; 
-    --text-on-accent: #FFFDF5;
-    --font-display: 'Playfair Display', serif;
-    --font-body: 'Poppins', sans-serif;
-    --ai-message-bg: #ECE5DB; /* Un beige leggermente diverso per i messaggi AI */
-    --user-message-bg: var(--primary-accent);
-    --user-message-text: var(--text-on-accent);
+    --lp-font-primary: 'Playfair Display', serif;
+    --lp-font-secondary: 'Roboto', sans-serif;
+    --lp-bg-main: #FDFCFB; 
+    --lp-text-primary: #3A3B3C; 
+    --lp-text-secondary: #606770;
+    --lp-accent-primary: #B08D57; /* Usiamo la versione più scura per i messaggi utente */
+    --lp-accent-primary-darker: #8c7044;
+    --lp-text-on-accent: #FFFFFF; /* Testo bianco su accento */
+    --lp-card-bg: #FFFFFF; 
+    --lp-border-color: #EAEAEA;
+
+    /* Chat specific, derivate o nuove */
+    --chat-ai-message-bg: #F4F4F4; /* Grigio molto chiaro, quasi bianco */
+    --chat-input-bg: #FFFFFF;
+    --chat-input-border: var(--lp-border-color);
+    --chat-header-bg: rgba(255, 255, 255, 0.95);
+    --chat-header-border: var(--lp-border-color);
 }
 
 .chat-page-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: var(--bg-color);
-    font-family: var(--font-body);
-    color: var(--text-color-main);
+    background-color: var(--lp-bg-main);
+    font-family: var(--lp-font-secondary);
+    color: var(--lp-text-primary);
 }
 
 .chat-page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.5rem;
-    background-color: var(--card-bg);
-    border-bottom: 1px solid rgba(202, 168, 112, 0.4);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1.1rem 2rem; /* Aumentato padding */
+    background-color: var(--chat-header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--chat-header-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .chat-page-header h1 {
-    font-family: var(--font-display);
-    color: var(--primary-accent);
-    font-size: 1.8rem;
+    font-family: var(--lp-font-primary);
+    color: var(--lp-accent-primary);
+    font-size: 1.7rem; 
     margin: 0;
     text-align: center;
     flex-grow: 1;
 }
 
-.back-to-home {
-    color: var(--text-color-main);
+.back-to-landing-link { /* Classe specifica per il link indietro */
+    color: var(--lp-text-secondary);
     text-decoration: none;
-    font-size: 0.9rem;
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
-    min-width: 80px; /* Per bilanciare il titolo */
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    min-width: 100px; /* Per bilanciare il titolo */
+}
+.back-to-landing-link:hover {
+    color: var(--lp-accent-primary-darker);
+    background-color: rgba(176, 141, 87, 0.08);
+}
+.back-to-landing-link .nav-item-text { /* Se usi una classe per il testo del link */
+     margin-left: 0.5rem;
 }
 
-.back-to-home:hover {
-    opacity: 1;
-    color: var(--primary-accent);
-}
 .header-placeholder {
-    min-width: 80px; /* Per bilanciare il titolo */
+    min-width: 100px; 
+    visibility: hidden; 
 }
 
 
@@ -66,90 +85,93 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.9rem; /* Più spazio tra i messaggi */
 }
 
 .chat-message {
-    max-width: 70%;
-    padding: 0.8rem 1.2rem;
-    border-radius: 18px;
+    max-width: 70%; /* Leggermente più stretto per un look più pulito */
+    padding: 0.8rem 1.3rem;
+    border-radius: 12px; /* Angoli coerenti con le card */
     line-height: 1.5;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
 }
 
-.chat-message p {
-    margin: 0;
-    word-wrap: break-word;
-}
+.chat-message p { margin: 0; word-wrap: break-word; }
 
 .chat-message.user {
-    background-color: var(--user-message-bg);
-    color: var(--user-message-text);
+    background-color: var(--lp-accent-primary);
+    color: var(--lp-text-on-accent);
     align-self: flex-end;
     border-bottom-right-radius: 4px;
 }
 
 .chat-message.ai {
-    background-color: var(--ai-message-bg);
-    color: var(--text-color-main);
+    background-color: var(--chat-ai-message-bg);
+    color: var(--lp-text-primary);
     align-self: flex-start;
     border-bottom-left-radius: 4px;
+    border: 1px solid var(--lp-border-color);
 }
+.chat-message.ai p:first-child::before {
+    content: 'AI'; /* Testo AI invece di icona, per un look più minimale */
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: var(--lp-accent-primary);
+    background-color: rgba(176, 141, 87, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 8px;
+    vertical-align: 1px;
+}
+
+/* Animazione "Sto pensando" */
+.chat-message.ai.loading-dots p span { /* ... (come prima) ... */ }
+@keyframes blink { /* ... (come prima) ... */ }
+
 
 .chat-input-area {
     display: flex;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid rgba(202, 168, 112, 0.4);
-    background-color: var(--card-bg);
+    align-items: center;
+    padding: 0.9rem 1.5rem; /* Più padding */
+    border-top: 1px solid var(--chat-header-border);
+    background-color: var(--lp-card-bg); 
 }
 
 .chat-input-area input[type="text"] {
     flex-grow: 1;
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--primary-accent-darker);
-    border-radius: 20px;
+    padding: 0.85rem 1.3rem;
+    border: 1px solid var(--chat-input-border);
+    border-radius: 25px;
     font-size: 1rem;
-    font-family: var(--font-body);
-    color: var(--text-color-main);
-    background-color: var(--bg-color);
+    font-family: var(--lp-font-secondary);
+    color: var(--lp-text-primary);
+    background-color: var(--chat-input-bg); 
     margin-right: 0.8rem;
-}
-
-.chat-input-area input[type="text"]:focus {
     outline: none;
-    border-color: var(--primary-accent);
-    box-shadow: 0 0 0 2px rgba(202, 168, 112, 0.3);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.chat-input-area input[type="text"]:focus {
+    border-color: var(--lp-accent-primary);
+    box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.2);
 }
 
 .send-button {
-    background-color: var(--primary-accent);
-    color: var(--text-on-accent);
-    border: none;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+    background-color: var(--lp-accent-primary);
+    /* ... resto come prima ... */
 }
-
-.send-button:hover {
-    background-color: var(--primary-accent-darker);
+.send-button:hover:not(:disabled) {
+    background-color: var(--lp-accent-primary-darker);
+    /* ... resto come prima ... */
 }
+.send-button:disabled { /* ... come prima ... */ }
+.send-button svg { /* ... come prima ... */ }
 
-.send-button svg {
-    width: 22px;
-    height: 22px;
-    stroke: var(--text-on-accent);
-}
-
-/* Responsive per la chat page */
-@media (max-width: 600px) {
-    .chat-page-header h1 {
-        font-size: 1.5rem;
-    }
-    .chat-message {
-        max-width: 85%;
-    }
+/* Responsive ChatPage (semplificato) */
+@media (max-width: 768px) {
+    .chat-page-header { padding: 0.8rem 1rem; }
+    .chat-page-header h1 { font-size: 1.4rem; }
+    .back-to-landing-link, .header-placeholder { min-width: 80px; font-size: 0.85rem;}
+    .chat-messages-area { padding: 1rem; }
+    .chat-message { max-width: 85%; font-size: 0.85rem; }
 }
