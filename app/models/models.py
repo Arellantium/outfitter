@@ -19,7 +19,7 @@ class Post(Base):
    
     id = Column(Integer, primary_key=True, index=True)
     description = Column(String, nullable=False)
-    author = Column(String, nullable=False)
+    author_id = Column(Integer, ForeignKey("utente.id"), nullable=False)
     image_url = Column(String, nullable=True)
     created_at = Column(String, nullable=False)  # ISO 8601, esempio: 2025-05-03T11:00:00Z
     likes = Column(Integer, default=0)
@@ -28,6 +28,7 @@ class Post(Base):
     visualizzazioni = Column(Integer, default=0)
     stato = Column(String, default="pubblicato")  # es. "pubblicato", "bozza"
     visibile = Column(Boolean, default=True)
+    autore = relationship("Utente", backref="post")
   
 
 class Articolo(Base):

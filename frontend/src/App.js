@@ -6,8 +6,16 @@ import SignupPage from './components/Signup';
 // import Payments from './components/Payments';
 // import Shipping from './components/Shipping';
 import CreatePost from './components/CreatePost.js';
+<<<<<<< HEAD
 import DashboardPage from './components/Dashboard';
 import CheckoutProcess from './components/Checkout/CheckoutProcess'; // <-- IMPORTA IL TUO NUOVO COMPONENTE CHECKOUT
+=======
+import DashboardPage from './components/Dashboard'; 
+import ChatPage from './components/ChatPage.js';
+import LandingPage from './components/LandingPage.js';
+import CheckoutProcess from './components/CheckoutProcess.js';
+import ProfilePage from './components/ProfiloPage.js';
+>>>>>>> 8507bb8946b2813b1a885fd04a43f254f0e99bfd
 
 function App() {
   const token = localStorage.getItem('access_token');
@@ -37,6 +45,7 @@ function App() {
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+<<<<<<< HEAD
 
         {/* ROTTA PER IL CHECKOUT (PROTETTA) */}
         <Route
@@ -52,6 +61,12 @@ function App() {
 
        
 
+=======
+        <Route path="/chatPage" element={<ChatPage />} />
+        <Route path="/landingPage" element={<LandingPage />} />
+        <Route path="/checkout" element={<CheckoutProcess />} />
+        <Route path="/profile" element={<ProfilePage />} />
+>>>>>>> 8507bb8946b2813b1a885fd04a43f254f0e99bfd
       </Routes>
     </Router>
   );

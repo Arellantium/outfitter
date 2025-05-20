@@ -1,39 +1,11 @@
-import React, { useState }from 'react';
+import React from 'react';
 import { Container, Row, Col, Form, InputGroup } from 'react-bootstrap';
-import { FaSearch, FaUserCircle, FaLock } from 'react-icons/fa';
+import { FaSearch  } from 'react-icons/fa';
 import './NavbarApp.css'; // stile personalizzato
-import { useNavigate } from 'react-router-dom';
-
+import ProfileDropdown from './ProfileDropdown'; // Assicurati di avere questo componente
+import CartIconWithBadge from './CartIconWithBadge'; // Assicurati di avere questo componente
 
 const NavbarApp = () => {
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const navigate = useNavigate();
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    if (!searchTerm.trim()) return;
-
-    try {
-      const token = localStorage.getItem('access_token');
-      const res = await fetch(`http://localhost:8006/utente/${searchTerm}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        alert('Utente non trovato');
-        return;
-      }
-
-      const user = await res.json();
-      navigate(`/profilo/${user.nome}`);
-    } catch (err) {
-      console.error('Errore nella ricerca utente:', err);
-      alert('Errore nella ricerca');
-    }
-  };
-
   return (
     <div className="app-navbar shadow-sm py-3 bg-white fixed-top">
       <Container fluid>
@@ -65,13 +37,8 @@ const NavbarApp = () => {
 
           {/* ICONS */}
           <Col xs={4} md={3} className="d-flex justify-content-end gap-3">
-            <FaUserCircle
-              size={20}
-              className="nav-icon"
-              onClick={() => navigate('/profilo')}
-              style={{ cursor: 'pointer' }}
-            />
-            <FaLock size={18} className="nav-icon" />
+            <ProfileDropdown />
+            <CartIconWithBadge />
           </Col>
         </Row>
       </Container>

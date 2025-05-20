@@ -2,12 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.configuration.dependencies_database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.models import Outfit, Articolo
+from app.models.models import Outfit, Articolo, Utente, Post, Like
 from app.schemas.outfitCreate import OutfitCreate, ArticoloCreate
 from app.schemas.outfitOut import OutfitOut
+from app.schemas.outiftPostResponse import OutfitPostResponse
 from app.services.auth import get_current_user
 from typing import List
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, exists, desc, and_, text
+from app.configuration.database import engine
+
 
 
 router = APIRouter()
@@ -253,3 +256,78 @@ async def aggiorna_articoli_outfit(
 
     await db.commit()
     return {"msg": f"{len(nuovi_articoli)} articoli aggiornati per outfit ID {id}"}
+
+@router.get("/outfit-posts",tags=["outfit"], response_model=List[OutfitPostResponse])
+async def get_outfit_posts(current_user_id: int = 1, db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(
+            Utente.nome.label("user"),
+            Post.id.label("id_image"),
+            Post.image_url.label("uri"),
+            Outfit.prezzo_finale.label("price"),
+            Outfit.venduto.label("sold"),
+            Post.description.label("description"),
+            exists().where(
+                and_(
+                    Like.utente_id == current_user_id,
+                    Like.post_id == Post.id
+                )
+            ).label("like")
+        )
+        .join(Post, Outfit.post_id == Post.id)
+        .join(Utente, Post.author_id == Utente.id)  # oppure usa ForeignKey se disponibile
+        .where(Post.visibile == True)
+        .order_by(desc(Post.created_at))
+    )
+
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    return [
+        OutfitPostResponse(
+            user=row.user,
+            id_image=str(row.id_image),
+            uri=row.uri,
+            price=str(row.price),
+            like=row.like,
+            sold=row.sold,
+            description=row.description
+        )
+        for row in rows
+    ]
+
+@router.post("/init-author-id")
+async def inizializza_author_id():
+    async with engine.begin() as conn:
+        # 1. Aggiungi colonna author_id se non esiste
+        await conn.execute(text("""
+            ALTER TABLE post
+            ADD COLUMN IF NOT EXISTS author_id INTEGER REFERENCES utente(id)
+        """))
+
+        # 2. Controlla se esiste la colonna author PRIMA di aggiornare i dati
+        check_column = await conn.execute(text("""
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name = 'post' AND column_name = 'author'
+        """))
+        column_exists = check_column.scalar()
+
+        if column_exists:
+            await conn.execute(text("""
+                UPDATE post
+                SET author_id = utente.id
+                FROM utente
+                WHERE post.author = utente.nome
+            """))
+
+            # 3. Elimina colonna author solo se esiste
+            await conn.execute(text("""
+                ALTER TABLE post
+                DROP COLUMN IF EXISTS author
+            """))
+
+    return {
+        "success": True,
+        "message": "Colonna author_id inizializzata con successo. Colonna 'author' gestita in sicurezza."
+    }
