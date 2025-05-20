@@ -3,10 +3,13 @@ import { Modal, Button, Table, Image, Alert } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, clearCart } from '../redux/reducers/cartReducer';
 import { markAsSold } from '../redux/reducers/imagesSliceReducer';
+import { setOutfitFromCart } from '../redux/reducers/checkoutReducer';
+import { useNavigate } from 'react-router-dom';
 
 const CartModal = ({ show, handleClose }) => {
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [purchaseComplete, setPurchaseComplete] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -15,7 +18,7 @@ const CartModal = ({ show, handleClose }) => {
 
   useEffect(() => {
     if (!show) {
-      setPurchaseComplete(false); // reset stato quando si chiude la modale
+      setPurchaseComplete(false);
       setShowConfirm(false);
     }
   }, [show]);
@@ -28,7 +31,9 @@ const CartModal = ({ show, handleClose }) => {
   };
 
   const handlePurchase = () => {
-    setShowConfirm(true);
+    dispatch(setOutfitFromCart(cartItems));
+    handleClose();
+    navigate('/checkout');
   };
 
   return (

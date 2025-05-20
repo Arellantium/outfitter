@@ -1,6 +1,7 @@
-import React from 'react';
-import { Container, Row, Col, ProgressBar } from 'react-bootstrap';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, ProgressBar } from 'react-bootstrap';
 import ShippingStep from './ShippingStep';
 import PaymentStep from './PaymentStep';
 import ConfirmationStep from './ConfirmationStep';
@@ -16,6 +17,7 @@ import './CheckoutProcess.css';
 
 const CheckoutProcess = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     currentStep,
     shippingData,
@@ -23,6 +25,12 @@ const CheckoutProcess = () => {
     orderNumber,
     outfitDetails
   } = useSelector(state => state.checkout);
+
+  useEffect(() => {
+    if (!outfitDetails || !outfitDetails.items || outfitDetails.items.length === 0) {
+      navigate('/');
+    }
+  }, [outfitDetails, navigate]);
 
   const handleShippingSubmit = (data) => {
     dispatch(setShippingData(data));
