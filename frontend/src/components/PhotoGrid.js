@@ -41,7 +41,7 @@ const PhotoGrid = () => {
       /*
       const res = await fetch(`https://api.tuosito.com/images?page=${pageRef.current}`);
       const pagedImages = await res.json();
-
+      
       if (pagedImages.length === 0) {
         hasMoreRef.current = false;
       } else {

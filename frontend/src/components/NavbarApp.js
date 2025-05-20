@@ -14,8 +14,8 @@ const NavbarApp = () => {
           <Col xs={4} md={3} className="d-flex align-items-center">
             <span className="logo-text ms-3">
               <span style={{ color: '#2c2c2c', fontWeight: '700' }}>st</span>
-              <span style={{ color: '#c1975c', fontWeight: '800' }}>A</span>
-              <span style={{ color: '#2c2c2c', fontWeight: '700' }}>llist</span>
+              <span style={{ color: '#c1975c', fontWeight: '800' }}>AI</span>
+              <span style={{ color: '#2c2c2c', fontWeight: '700' }}>list</span>
             </span>
           </Col>
 
