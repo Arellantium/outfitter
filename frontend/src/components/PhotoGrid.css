@@ -1,152 +1,168 @@
+/* src/components/PhotoGrid.css */
+
+/* --- TITOLO E BOTTONE UPLOAD --- */
+.latest-looks-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  letter-spacing: 1px;
+  color: #333;
+}
+
+/* MODIFICHE AL BOTTONE CARICA POST */
+.btn-custom-upload {
+  /* Stile ispirato a .btn-primary-ai dalla LandingPage */
+  background: linear-gradient(135deg, var(--lp-primary, #CAA870), var(--lp-primary-darker, #B08D57)); /* Fallback colori se variabili non definite */
+  color: var(--lp-text-on-primary, white);
+  border: none; /* Rimosso il bordo per allinearsi con .btn-primary-ai */
+  
+  padding: 0.75rem 1.5rem; /* Leggermente aumentato per un aspetto più premium (circa 12px 24px) */
+  border-radius: 25px; /* Mantenuto, un buon compromesso; .btn-ai ha 50px */
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; /* Coerente con .btn-ai */
+  font-size: 0.9rem; /* Leggermente più piccolo di .btn-ai (1rem) ma adatto qui */
+  letter-spacing: 0.8px; /* Coerente con .btn-ai */
+  text-transform: uppercase; /* Coerente con .btn-ai */
+  
+  cursor: pointer;
+  transition: background 0.25s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none; /* Aggiunto per sicurezza se usato come link */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12); /* Ombra simile a .btn-primary-ai */
+}
+
+.btn-custom-upload:hover {
+  background: linear-gradient(135deg, var(--lp-primary-darker, #B08D57), var(--lp-primary, #CAA870)); /* Gradiente invertito su hover */
+  color: var(--lp-text-on-primary, white); /* Mantiene colore testo */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15); /* Ombra più pronunciata, simile a .btn-primary-ai:hover */
+  transform: translateY(-2px); /* Leggero sollevamento, simile a .btn-primary-ai:hover */
+}
+
+.btn-custom-upload:active {
+  /* Per :active, usiamo un gradiente che tende al più scuro o lo stesso dell'hover ma con transform/shadow diversi */
+  background: linear-gradient(135deg, var(--lp-primary-darker, #B08D57), var(--lp-primary-darker, #A07D47));
+  transform: translateY(0px); /* Ritorna alla posizione o leggermente premuto */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12); /* Ombra ridotta per l'effetto "premuto" */
+}
+
+
+/* --- MASONRY GRID STYLES (FONDAMENTALI PER IL LAYOUT) --- */
 .my-masonry-grid {
-  display: -webkit-box; /* Safari support */
-  display: -ms-flexbox;
   display: flex;
-  margin-left: -16px; /* gutter size offset */
-  width: auto;
+  margin-left: -16px; /* Deve essere negativo del padding-left della colonna */
+  width: auto; /* o 100% */
 }
-
 .my-masonry-grid_column {
-  padding-left: 16px; /* gutter size */
-  background-clip: padding-box;
-  min-width: 0; /* evita layout broken su resize o scroll */
+  padding-left: 16px; /* Gutter (spazio) tra le colonne */
+  background-clip: padding-box; /* Necessario per il corretto rendering del gutter */
+  /* Le colonne prendono la larghezza automaticamente da flexbox */
 }
 
+/* Stile per gli ITEM MASONRY (il wrapper diretto di ogni card) */
 .masonry-item {
-  margin-bottom: 16px;
+  margin-bottom: 16px; /* Spazio verticale tra le card nella stessa colonna */
   animation: fadeIn 0.6s ease forwards;
+  /* Non impostare width qui, è gestita da Masonry */
 }
 
-.image-wrapper {
+
+/* --- STRUTTURA CARD NELLA GRIGLIA --- */
+.card-image-clickable-area {
   position: relative;
+  display: block; /* Rende l'intero div cliccabile e rispetta width/height */
   width: 100%;
-  overflow: hidden;
   border-radius: 10px;
+  overflow: hidden; /* Cruciale per contenere l'immagine arrotondata e l'overlay */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: #f0f0f0; /* Sfondo di fallback */
 }
 
-.image-wrapper img {
+.card-image-clickable-area.sold::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+
+.card-img-top-masonry {
   width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 8px;
-  /* opzionale: rimuovi se vuoi mantenere altezze originali */
-  /* aspect-ratio: 2/3; */
-  /* object-fit: cover; */
+  height: auto; /* Mantiene le proporzioni dell'immagine */
+  display: block; /* Rimuove eventuale spazio sotto l'immagine */
+  border-radius: 10px; /* Arrotonda l'immagine stessa */
+  transition: transform 0.35s ease-in-out;
+}
+.card-image-clickable-area:hover .card-img-top-masonry {
+  transform: scale(1.03); /* Leggero zoom su hover della card */
 }
 
-.image-overlay {
+
+/* Overlay specifico per la CARD nella griglia */
+.card-image-overlay {
   position: absolute;
   inset: 0;
-  display: flex;
+  display: flex; 
   flex-direction: column;
   justify-content: space-between;
+  padding: 10px 12px;
+  
   opacity: 0;
-  transition: opacity 0.3s ease;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 10px;
+  visibility: hidden; 
+  transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s; 
+  
+  background: linear-gradient(to top, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.30) 45%, rgba(0,0,0,0) 100%);
+  border-radius: 10px;
+  z-index: 2; 
+  pointer-events: none; 
 }
 
-.image-wrapper:hover .image-overlay {
+.card-image-clickable-area:hover .card-image-overlay {
   opacity: 1;
+  visibility: visible; 
+  pointer-events: auto; 
+  transition-delay: 0s; 
 }
 
-.overlay-top {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+.card-overlay-top { 
+  display: flex; justify-content: flex-end; gap: 8px;
+}
+.card-overlay-bottom { 
+  color: white; font-weight: 500; display: flex; justify-content: space-between;
+  align-items: center; text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+}
+.card-username { font-size: 0.85rem; font-weight: 600; }
+.card-price { 
+  background-color: rgba(255, 255, 255, 0.9); color: #333; padding: 4px 10px;
+  border-radius: 16px; font-size: 0.8rem; font-weight: 700;
+  font-family: 'Poppins', sans-serif; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  line-height: 1.2; white-space: nowrap;
 }
 
-.overlay-bottom {
-  color: white;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.card-icon-btn { 
+  background: rgba(255, 255, 255, 0.85); border: none; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  cursor: pointer; font-size: 15px; color: #555; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease; padding: 0;
 }
+.card-icon-btn:hover { background: #ffffff; color: #000; transform: scale(1.1); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); }
+.card-icon-btn.liked { color: #e74c3c; }
+.card-icon-btn.card-icon-btn-remove { background: #e74c3c !important; color: white !important; }
+.card-icon-btn.card-icon-btn-remove:hover { background: #c0392b !important; }
+.card-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 
-.icon-btn {
-  background: #ffffffee;
-  border: none;
-  width: 40px; /* oppure 48px */
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 18px;
-  color: #666;
-  font-weight: bold;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.sold-badge { 
+  position: absolute; top: 10px; left: 10px; background: rgba(220, 53, 69, 0.85);
+  color: white; font-weight: bold; padding: 4px 8px; border-radius: 6px;
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;
+  z-index: 3; 
+  pointer-events: none;
 }
 
-.icon-btn-remove {
-  background: #ff0000 !important;
-  color: white;
-}
-.icon-btn:hover {
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.icon-btn.liked {
-  color: red;
-}
-
-/* Pulsanti disabilitati */
-.icon-btn:disabled {
-  display: none; /* Nasconde i pulsanti disabilitati */
-}
-
-.price {
-  background-color: #ffffffdd;       /* bianco semi-opaco */
-  color: #111;                       /* testo molto scuro */
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 1.3rem;
-  font-weight: 700;
-  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  line-height: 1;
-}
-
-/* Badge "VENDUTO" */
-.sold-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(255, 0, 0, 0.85);
-  color: white;
-  font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  z-index: 2;
-}
-
-/* Responsive Columns (opzionale) */
-@media (max-width: 1100px) {
-  .my-masonry-grid {
-    column-count: 2;
-  }
-}
-
-@media (max-width: 700px) {
-  .my-masonry-grid {
-    column-count: 1;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* Gli stili per ImageModal (.image-modal-backdrop-v2, ecc.) devono stare in ImageModal.css */

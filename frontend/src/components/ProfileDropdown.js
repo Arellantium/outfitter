@@ -17,7 +17,7 @@ const ProfileDropdown = () => {
 
         <Dropdown.Divider />
 
-        <Dropdown.Item href="/logout">
+        <Dropdown.Item href="/login">
           <FaSignOutAlt className="me-2" />
           Logout
         </Dropdown.Item>
