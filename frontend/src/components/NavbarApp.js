@@ -28,7 +28,7 @@ const NavbarApp = () => {
                 </InputGroup.Text>
                 <Form.Control
                   type="text"
-                  placeholder="Search outfits or users..."
+                  placeholder="Search users..."
                   className="search-input"
                 />
               </InputGroup>
