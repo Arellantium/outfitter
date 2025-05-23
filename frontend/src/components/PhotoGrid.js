@@ -1,11 +1,10 @@
-// src/components/PhotoGrid.js
 import React, { useState, useEffect, useCallback } from 'react';
 import Masonry from 'react-masonry-css';
 import './PhotoGrid.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { FaPlusCircle } from 'react-icons/fa';
-import ImageModal from './ImageModal'; // <-- IMPORTA IL NUOVO COMPONENTE
+import CreatePost from './CreatePost';
+import ImageModal from './ImageModal';
 import {
   fetchImagesStart,
   fetchImagesSuccess,
@@ -14,13 +13,15 @@ import {
 } from '../redux/reducers/imagesSliceReducer';
 import { addToCart, removeFromCart } from '../redux/reducers/cartReducer';
 
+const themeColors = {
+  secondary: '#f0e9e0'
+};
+
 const PhotoGrid = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const [imageToView, setImageToView] = useState(null); // Stato per l'immagine da passare al modal
-  // NOTA: Ho rinominato selectedImage in imageToView per chiarezza,
-  // dato che il modal stesso gestirà la logica di "selezione" interna se necessario.
+  const [imageToView, setImageToView] = useState(null);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
 
   const images = useSelector((state) => state.images.images);
   const loading = useSelector((state) => state.images.loading);
@@ -49,29 +50,50 @@ const PhotoGrid = () => {
   const handleToggleLike = (id_image) => {
     dispatch(toggleLike(id_image));
   };
-  const handleNavigateToCreatePost = () => navigate('/create-post');
 
-  const openModalWithImage = (imageObject) => { // Ora passiamo l'intero oggetto immagine
-    console.log('DEBUG: openModalWithImage CALLED with:', imageObject);
+  const openModalWithImage = (imageObject) => {
     setImageToView(imageObject);
   };
 
   const closeModal = () => {
-    console.log('DEBUG: closeModal CALLED.');
     setImageToView(null);
+  };
+
+  const handleOpenCreatePostModal = () => {
+    setShowCreatePostModal(true);
+  };
+
+  const handleCloseCreatePostModal = () => {
+    setShowCreatePostModal(false);
   };
 
   const breakpointColumnsObj = { default: 3, 1100: 3, 992: 2, 700: 2, 576: 1 };
 
   if (loading && !imagesAlreadyLoaded) return <div className="loading text-center mt-5 py-5">Caricamento immagini...</div>;
   if (error) return <div className="text-danger text-center mt-5 py-5">Errore nel caricamento: {error}</div>;
-  if (!loading && !imagesAlreadyLoaded && !error) return <div className="text-center mt-5 py-5">Nessuna immagine da visualizzare.</div>;
+  if (!images && !loading && !error) return <div className="text-center mt-5 py-5">Nessuna immagine da visualizzare.</div>;
 
   return (
     <div className="photo-grid-wrapper container-fluid-equivalent px-2 px-sm-3 py-4">
       <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-        <h2 className="latest-looks-title">Latest Looks</h2>
-        <button className="btn-custom-upload" onClick={handleNavigateToCreatePost}>
+        <h2 className="latest-looks-title" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#333' }}>Latest Looks</h2>
+        <button
+          className="btn-custom-upload"
+          onClick={handleOpenCreatePostModal}
+          style={{
+            backgroundColor: '#d9a86c',
+            color: 'white',
+            border: 'none',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '20px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '0.9rem',
+            fontWeight: 500,
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+          }}
+        >
           <FaPlusCircle size="1.1em" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
           Carica Post
         </button>
@@ -84,38 +106,30 @@ const PhotoGrid = () => {
       >
         {images.map((img) => {
           if (!img || typeof img.id_image === 'undefined') return null;
-
           const isInCart = cartItems.some(item => String(item.id_image) === String(img.id_image));
           const handleToggleCart = () => {
-            if (isInCart) { dispatch(removeFromCart(img.id_image)); }
-            else { dispatch(addToCart(img)); }
+            if (isInCart) dispatch(removeFromCart(img.id_image));
+            else dispatch(addToCart(img));
           };
 
           return (
-            // Struttura card più sicura per il click
             <div key={`card-${img.id_image}`} className="masonry-item">
               <div
                 className={`card-image-clickable-area ${img.sold ? 'sold' : ''}`}
-                onClick={() => {
-                  console.log('DEBUG onClick: CARD AREA CLICKED - Image:', img);
-                  if (!img.sold) {
-                    openModalWithImage(img); // Passa l'intero oggetto img
-                  }
-                }}
+                onClick={() => { if (!img.sold) openModalWithImage(img); }}
                 style={{ cursor: img.sold ? 'default' : 'pointer' }}
               >
                 {img.sold && <div className="sold-badge">VENDUTO</div>}
                 <img
                   src={img.uri}
                   alt={img.description || `Immagine ${img.id_image}`}
-                  className="card-img-top-masonry" // Nuova classe per lo stile
+                  className="card-img-top-masonry"
                 />
-                {/* L'overlay è separato e posizionato sopra l'immagine con CSS */}
                 {!img.sold && (
-                  <div className="card-image-overlay"> {/* Nuova classe per l'overlay della card */}
+                  <div className="card-image-overlay">
                     <div className="card-overlay-top">
-                      <button className={`card-icon-btn ${img.like ? 'liked' : ''}`} onClick={(e) => { e.stopPropagation(); handleToggleLike(img.id_image);}} aria-label="like">♥</button>
-                      <button className={`card-icon-btn ${isInCart ? 'card-icon-btn-remove' : ''}`} onClick={(e) => { e.stopPropagation(); handleToggleCart();}} aria-label="add to cart" disabled={img.sold}>{isInCart ? '−' : '＋'}</button>
+                      <button className={`card-icon-btn ${img.like ? 'liked' : ''}`} onClick={(e) => { e.stopPropagation(); handleToggleLike(img.id_image); }} aria-label="like">♥</button>
+                      <button className={`card-icon-btn ${isInCart ? 'card-icon-btn-remove' : ''}`} onClick={(e) => { e.stopPropagation(); handleToggleCart(); }} aria-label="add to cart" disabled={img.sold}>{isInCart ? '−' : '＋'}</button>
                     </div>
                     <div className="card-overlay-bottom">
                       <span className="card-username">{img.user || 'Utente Sconosciuto'}</span>
@@ -129,19 +143,53 @@ const PhotoGrid = () => {
         })}
       </Masonry>
 
-      {/* Usa il nuovo componente ImageModal */}
       {imageToView && (
         <ImageModal
           imageUrl={imageToView.uri}
-          imageDetails={{ // Passa i dettagli che vuoi mostrare nel modal
+          imageDetails={{
             user: imageToView.user,
-            likes: imageToView.likes_count, // Assumendo che hai un campo likes_count
-            isLiked: imageToView.like,     // Assumendo che hai un campo like (boolean)
+            likes: imageToView.likes_count,
+            isLiked: imageToView.like,
             description: imageToView.description,
-            // Aggiungi qui altri dettagli se necessario
           }}
           onClose={closeModal}
         />
+      )}
+
+      {showCreatePostModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.65)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1050,
+            padding: '20px'
+          }}
+          onClick={handleCloseCreatePostModal}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="custom-modal-content-scroll"
+            style={{
+              backgroundColor: 'transparent',
+              borderRadius: '20px',
+              boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)',
+              width: '100%',
+              maxWidth: '650px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative'
+            }}
+          >
+            <CreatePost isModal={true} onCloseModal={handleCloseCreatePostModal} />
+          </div>
+        </div>
       )}
     </div>
   );
