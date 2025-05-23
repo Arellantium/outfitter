@@ -8,31 +8,49 @@ from app.models.models import Post as PostModel, NascondiPost, Utente
 from app.services.auth import get_current_user
 from app.schemas.postOut import PostOut
 from app.schemas.common import MessageResponse
+from sqlalchemy import select, desc
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
-@router.post("/", response_model=PostOut)
+@router.post("/", response_model=PostOut, tags=["post"])
 async def create_post(
     description: str = Form(...),
+    prezzo_finale: float = Form(...),  # oppure Float se cambi il tipo nel model
+    venduto: bool = Form(False),
     image: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user)
 ):
+    # Recupera l'utente corrente
+    result = await db.execute(select(Utente).where(Utente.nome == current_user))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+
+    # Crea l'oggetto Post
     post = PostModel(
         description=description,
-        author=current_user,
+        author_id=user.id,
         created_at=datetime.utcnow().isoformat(),
-        likes=0
+        likes=0,
+        visualizzazioni=0,
+        stato="pubblicato",
+        visibile=True,
+        prezzo_finale=prezzo_finale,
+        venduto=venduto
     )
+
     db.add(post)
     await db.commit()
     await db.refresh(post)
 
+    # Salva il file immagine
     os.makedirs("images", exist_ok=True)
     file_location = f"images/{post.id}_{image.filename}"
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
+    # Aggiorna il campo image_url nel post
     post.image_url = file_location
     await db.commit()
     await db.refresh(post)
@@ -102,3 +120,33 @@ async def nascondi_post(post_id: int, db: AsyncSession = Depends(get_db), curren
     db.add(nascondi)
     await db.commit()
     return {"message": f"Post {post_id} nascosto"}
+
+@router.get("/miei-post", tags=["utente"])
+async def get_user_posts(
+    db: AsyncSession = Depends(get_db),
+    current_user_name: str = Depends(get_current_user)
+):
+    result = await db.execute(select(Utente).where(Utente.nome == current_user_name))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+
+    stmt = (
+        select(PostModel)
+        .where(PostModel.author_id == user.id)
+        .order_by(desc(PostModel.created_at))
+    )
+    result = await db.execute(stmt)
+    posts = result.scalars().all()
+
+    return [
+        {
+            "post_id": post.id,
+            "description": post.description,
+            "image_url": post.image_url,
+            "prezzo_finale": post.prezzo_finale,
+            "venduto": post.venduto,
+            "created_at": post.created_at
+        }
+        for post in posts
+    ]

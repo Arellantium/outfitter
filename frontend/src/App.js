@@ -34,6 +34,7 @@ function App() {
         <Route path="/landingPage" element={<LandingPage />} />
         <Route path="/checkout" element={<CheckoutProcess />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/createPost" element={<CreatePost />} />
       </Routes>
     </Router>
   );

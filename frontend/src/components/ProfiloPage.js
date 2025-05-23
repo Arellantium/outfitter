@@ -1,202 +1,198 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Image, Button, Card, Nav, Tab } from 'react-bootstrap';
-import { PersonPlus, PersonCheck, BarChartFill } from 'react-bootstrap-icons'; // Icone di esempio
+import {
+    Container,
+    Row,
+    Col,
+    Image,
+    Nav,
+    Dropdown,
+    Spinner,
+    Card // Useremo Card per il contenitore principale con angoli smussati
+} from 'react-bootstrap';
+// Icone opzionali, se servono per il menu
+// import { GearFill, BoxArrowRight } from 'react-bootstrap-icons';
 
-// Componenti fittizi per i post e la dashboard
-const PostCard = ({ post }) => (
-    <Card className="mb-3">
-        {post.imageUrl && <Card.Img variant="top" src={post.imageUrl} alt={post.caption} />}
-        <Card.Body>
-            <Card.Text>{post.caption}</Card.Text>
-        </Card.Body>
-    </Card>
-);
+// Dati fittizi per il profilo e i contenuti delle tab
+const mockUserData = {
+    username: "username",
+    profileImageUrl: "https://via.placeholder.com/100/cccccc/808080?Text=User", // Placeholder grigio
+    followers: 0,
+    following: 0,
+};
 
-const EarningsDashboard = ({ earningsData }) => (
-    <Card>
-        <Card.Header as="h5">
-            <BarChartFill className="me-2" />
-            Guadagni del Profilo
-        </Card.Header>
-        <Card.Body>
-            <p><strong>Guadagni Totali:</strong> €{earningsData.totalEarnings || 0}</p>
-            <p><strong>Vendite del Mese:</strong> €{earningsData.monthlySales || 0}</p>
-            {/* Aggiungi altri grafici o statistiche qui */}
-        </Card.Body>
-    </Card>
-);
+const mockPosts = [];
+const mockSavedItems = [];
+const mockBoughtItems = [];
 
 
-function ProfilePage({ userId, currentUserId }) { // userId del profilo da visualizzare, currentUserId dell'utente loggato
-    const [profileData, setProfileData] = useState(null);
-    const [posts, setPosts] = useState([]);
-    const [earnings, setEarnings] = useState({});
-    const [isFollowing, setIsFollowing] = useState(false);
+function ProfilePage() {
+    const [userData, setUserData] = useState(null);
+    const [activeTab, setActiveTab] = useState('wardrobe'); // Tab attiva di default
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    // const [error, setError] = useState(null); // Per la gestione degli errori
 
-    // Simula il recupero dei dati del profilo
+    // Contenuti delle tab (inizialmente vuoti o con dati fittizi)
+    const [posts, setPosts] = useState(mockPosts);
+    const [savedItems, setSavedItems] = useState(mockSavedItems);
+    const [boughtItems, setBoughtItems] = useState(mockBoughtItems);
+
     useEffect(() => {
-        const fetchProfileData = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                // --- Chiamata API al backend FastAPI per i dati del profilo ---
-                // Esempio: const response = await fetch(`/api/users/${userId}`);
-                // const data = await response.json();
+        // Simula il caricamento dei dati
+        setIsLoading(true);
+        setTimeout(() => {
+            setUserData(mockUserData);
+            // Qui potresti caricare anche i dati per la tab di default, es. wardrobeItems
+            setIsLoading(false);
+        }, 1000);
+    }, []);
 
-                // Dati fittizi per l'esempio
-                const mockProfileData = {
-                    id: userId,
-                    name: "Mario Rossi",
-                    profileImageUrl: "https://via.placeholder.com/150", // Sostituisci con l'URL reale
-                    followers: 1250,
-                    following: 300,
-                    isOwnProfile: userId === currentUserId, // Determina se è il profilo dell'utente loggato
-                };
-                setProfileData(mockProfileData);
+    const handleSelectTab = async (selectedKey) => {
+    setActiveTab(selectedKey);
+    setIsLoading(true);
 
-                // --- Chiamata API per lo stato "segui" ---
-                // Esempio: const followStatusResponse = await fetch(`/api/users/${currentUserId}/following/${userId}`);
-                // const followStatusData = await followStatusResponse.json();
-                // setIsFollowing(followStatusData.isFollowing);
-                setIsFollowing(false); // Valore fittizio iniziale
+    try {
+        const token = localStorage.getItem("access_token");
+        const headers = { Authorization: `Bearer ${token}` };
 
-                // --- Chiamata API per i post ---
-                // Esempio: const postsResponse = await fetch(`/api/users/${userId}/posts`);
-                // const postsData = await postsResponse.json();
-                const mockPosts = [
-                    { id: 1, imageUrl: "https://via.placeholder.com/600x400?text=Post+1", caption: "Descrizione del primo post!" },
-                    { id: 2, imageUrl: "https://via.placeholder.com/600x400?text=Post+2", caption: "Un altro bellissimo post." },
-                    { id: 3, caption: "Solo testo per questo post." }, // Post senza immagine
-                ];
-                setPosts(mockPosts);
+        if (selectedKey === 'posts') {
+            const res = await fetch("http://localhost:8006/post/miei-post", { headers });
+            const data = await res.json();
+            setPosts(data);
+        } else if (selectedKey === 'saved') {
+            const res = await fetch("http://localhost:8006/saved/salvati", { headers });
+            const data = await res.json();
+            setSavedItems(data);
+        } else if (selectedKey === 'bought') {
+            const res = await fetch("http://localhost:8006/acquisti/acquisti_miei", { headers });
+            const data = await res.json();
+            setBoughtItems(data);
+        }
+    } catch (error) {
+        console.error("Errore nel caricamento dati:", error);
+    } finally {
+        setIsLoading(false);
+    }
+};
 
-                // --- Chiamata API per i guadagni (solo se è il profilo dell'utente) ---
-                if (mockProfileData.isOwnProfile) {
-                    // Esempio: const earningsResponse = await fetch(`/api/users/${userId}/earnings`);
-                    // const earningsData = await earningsResponse.json();
-                    const mockEarnings = {
-                        totalEarnings: 5780.50,
-                        monthlySales: 750.20,
-                    };
-                    setEarnings(mockEarnings);
-                }
+    const renderTabContent = () => {
+        if (isLoading) {
+            return (
+                <div className="text-center p-5">
+                    <Spinner animation="border" size="sm" />
+                    <p className="mt-2">Loading content...</p>
+                </div>
+            );
+        }
 
-            } catch (err) {
-                setError("Errore nel caricamento dei dati del profilo.");
-                console.error(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchProfileData();
-    }, [userId, currentUserId]);
-
-    const handleFollowToggle = async () => {
-        // --- Chiamata API al backend FastAPI per seguire/smettere di seguire ---
-        try {
-            // Esempio:
-            // const method = isFollowing ? 'DELETE' : 'POST';
-            // await fetch(`/api/users/${currentUserId}/follow/${userId}`, { method });
-            setIsFollowing(!isFollowing);
-            // Aggiorna il conteggio dei follower se necessario (potrebbe essere gestito dal backend)
-            setProfileData(prevData => ({
-                ...prevData,
-                followers: isFollowing ? prevData.followers -1 : prevData.followers + 1
-            }));
-        } catch (err) {
-            console.error("Errore durante l'azione di follow/unfollow:", err);
-            // Potresti voler mostrare un messaggio di errore all'utente
+        switch (activeTab) {
+            case 'posts':
+                return posts.length > 0 ? (
+                    posts.map(item => <div key={item.id}>{item.title}</div>)
+                ) : <p className="text-muted p-3">No posts yet.</p>;
+            case 'saved':
+                return savedItems.length > 0 ? (
+                    savedItems.map(item => <div key={item.id}>{item.name}</div>)
+                ) : <p className="text-muted p-3">No saved items.</p>;
+            case 'bought':
+                return boughtItems.length > 0 ? (
+                    boughtItems.map(item => <div key={item.id}>{item.productName}</div>)
+                ) : <p className="text-muted p-3">No items bought.</p>;
+            default:
+                return <p className="text-muted p-3">Select a tab.</p>;
         }
     };
 
-    if (isLoading) {
-        return <Container className="text-center mt-5"><p>Caricamento...</p></Container>;
+    if (isLoading && !userData) { // Mostra spinner solo al caricamento iniziale dei dati utente
+        return (
+            <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+                <Spinner animation="border" />
+            </Container>
+        );
     }
 
-    if (error) {
-        return <Container className="text-center mt-5 alert alert-danger"><p>{error}</p></Container>;
-    }
-
-    if (!profileData) {
-        return <Container className="text-center mt-5"><p>Profilo non trovato.</p></Container>;
+    if (!userData) { // Se i dati utente non sono stati caricati (es. errore non gestito qui)
+        return <Container className="text-center mt-5"><p>Could not load user data.</p></Container>;
     }
 
     return (
-        <Container fluid style={{ backgroundColor: '#f8f9fa', minHeight: '100vh', paddingTop: '20px' }}>
-            {/* Sezione Header Profilo */}
-            <Row className="mb-4 p-3 bg-white shadow-sm align-items-center" style={{ borderBottom: '1px solid #dee2e6' }}>
-                <Col xs="auto">
-                    <Image
-                        src={profileData.profileImageUrl || "https://via.placeholder.com/100?text=No+Img"}
-                        roundedCircle
-                        style={{ width: '100px', height: '100px', objectFit: 'cover', border: '3px solid #dee2e6' }}
-                    />
-                </Col>
-                <Col>
-                    <h2 className="mb-0">{profileData.name}</h2>
-                    <div className="text-muted">
-                        <span><strong>{profileData.followers}</strong> Followers</span>
-                        <span className="ms-3"><strong>{profileData.following}</strong> Seguiti</span>
-                    </div>
-                </Col>
-                {!profileData.isOwnProfile && (
-                    <Col xs="auto">
-                        <Button
-                            variant={isFollowing ? "outline-secondary" : "primary"}
-                            onClick={handleFollowToggle}
-                        >
-                            {isFollowing ? <PersonCheck className="me-1" /> : <PersonPlus className="me-1" />}
-                            {isFollowing ? "Seguito" : "Segui"}
-                        </Button>
-                    </Col>
-                )}
-            </Row>
+        <Container fluid style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', paddingTop: '2rem', paddingBottom: '2rem' }}>
+            <Card style={{ maxWidth: '800px', margin: '0 auto', borderRadius: '0.75rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <Card.Header style={{ backgroundColor: 'white', borderBottom: '1px solid #e9ecef', padding: '1rem 1.5rem' }}>
+                    <Row className="align-items-center">
+                        <Col>
+                            <h5 style={{ margin: 0, color: '#007bff', fontWeight: 'bold' }}>stAllist</h5>
+                        </Col>
+                        <Col xs="auto">
+                            <Dropdown align="end">
+                                <Dropdown.Toggle variant="light" id="dropdown-basic" size="sm">
+                                    Menu
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item href="#/logout">Logout</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Col>
+                    </Row>
+                </Card.Header>
 
-            {/* Tabbed Content: Posts e Dashboard Guadagni */}
-            <Tab.Container id="profile-tabs" defaultActiveKey="posts">
-                <Row>
-                    <Col>
-                        <Nav variant="pills" className="flex-row mb-3 justify-content-center">
-                            <Nav.Item>
-                                <Nav.Link eventKey="posts">Post</Nav.Link>
-                            </Nav.Item>
-                            {profileData.isOwnProfile && ( // Mostra tab guadagni solo se è il proprio profilo
-                                <Nav.Item>
-                                    <Nav.Link eventKey="earnings">Dashboard Guadagni</Nav.Link>
-                                </Nav.Item>
-                            )}
-                        </Nav>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="posts">
-                                <h3 className="mb-3 text-center">Post di {profileData.name}</h3>
-                                <Row xs={1} md={2} lg={3} className="g-4">
-                                    {posts.length > 0 ? (
-                                        posts.map(post => (
-                                            <Col key={post.id}>
-                                                <PostCard post={post} />
-                                            </Col>
-                                        ))
-                                    ) : (
-                                        <p className="text-center">Nessun post da mostrare.</p>
-                                    )}
-                                </Row>
-                            </Tab.Pane>
-                            {profileData.isOwnProfile && (
-                                <Tab.Pane eventKey="earnings">
-                                    <EarningsDashboard earningsData={earnings} />
-                                </Tab.Pane>
-                            )}
-                        </Tab.Content>
-                    </Col>
-                </Row>
-            </Tab.Container>
+                <Card.Body style={{ padding: '2rem 1.5rem' }}>
+                    <Row className="align-items-center mb-4">
+                        <Col xs="auto">
+                            <Image
+                                src={userData.profileImageUrl}
+                                roundedCircle
+                                style={{ width: '80px', height: '80px', border: '2px solid #dee2e6' }}
+                            />
+                        </Col>
+                        <Col>
+                            <h4 style={{ fontWeight: '600', margin: 0 }}>@{userData.username}</h4>
+                            <p className="text-muted" style={{ fontSize: '0.9rem', margin: 0 }}>
+                                {userData.followers} followers - {userData.following} following
+                            </p>
+                        </Col>
+                    </Row>
+
+                    <Nav variant="pills" activeKey={activeTab} onSelect={handleSelectTab} className="mb-4 custom-pills">
+                        <Nav.Item>
+                            <Nav.Link eventKey="posts">Posts</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="saved">Saved</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="bought">Bought</Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+
+                    <div>
+                        {renderTabContent()}
+                    </div>
+                </Card.Body>
+            </Card>
+            {/* CSS personalizzato per le pillole */}
+            <style type="text/css">
+                {`
+                .custom-pills .nav-link {
+                    color: #495057;
+                    background-color: #e9ecef;
+                    margin-right: 0.5rem;
+                    border-radius: 0.5rem; /* Angoli più arrotondati per i pills */
+                    font-weight: 500;
+                    padding: 0.5rem 1rem;
+                }
+                .custom-pills .nav-link.active {
+                    color: white;
+                    background-color: #343a40; /* Sfondo scuro per la tab attiva */
+                }
+                .custom-pills .nav-link:hover:not(.active) {
+                    background-color: #dee2e6;
+                }
+                `}
+            </style>
         </Container>
     );
 }

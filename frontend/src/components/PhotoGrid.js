@@ -26,20 +26,9 @@ const PhotoGrid = () => {
     try {
       dispatch(fetchImagesStart());
 
-      // ⚠️ USO LOCALE STATICO PER SVILUPPO — COMMENTA QUESTO BLOCCO QUANDO PASSI A REST API
-      const allImages = require('../mock/allImages.json'); // importa da file statico
-      await new Promise((r) => setTimeout(r, 500));
-
-      if (allImages.length === 0) {
-        hasMoreRef.current = false;
-      } else {
-        dispatch(fetchImagesSuccess(allImages));
-        pageRef.current += 1;
-      }
-
       // ✅ ATTIVA QUESTO BLOCCO PER CHIAMATA REST API
-      /*
-      const res = await fetch(`https://api.tuosito.com/images?page=${pageRef.current}`);
+      
+      const res = await fetch(`http://localhost:8006/outfit-posts`);
       const pagedImages = await res.json();
       
       if (pagedImages.length === 0) {
@@ -47,8 +36,7 @@ const PhotoGrid = () => {
       } else {
         dispatch(fetchImagesSuccess(pagedImages));
         pageRef.current += 1;
-      }
-      */
+      }   
 
     } catch (error) {
       dispatch(fetchImagesError(error.message));
