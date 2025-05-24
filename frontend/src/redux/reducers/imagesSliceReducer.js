@@ -58,7 +58,7 @@ const imagesSlice = createSlice({
       // --- MODIFICA QUI ---
       // Dato che PhotoGrid.js ora carica allImages.json una sola volta,
       // sostituiamo sempre lo stato delle immagini.
-      state.images = processedImages;
+      state.images = [...state.images, ...processedImages];
       console.log(`[imagesSlice] fetchImagesSuccess - Immagini SOSTITUITE nello stato. Totale: ${state.images.length}`);
       // --- FINE MODIFICA ---
 
