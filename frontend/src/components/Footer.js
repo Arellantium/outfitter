@@ -9,7 +9,7 @@ const Footer = () => {
       <Container>
         <Row>
           <Col md={4} className="mb-4">
-            <h5 className="fw-bold">st<span style={{ color: '#c1975c' }}>A</span>llist</h5>
+            <h5 className="fw-bold">st<span style={{ color: '#c1975c' }}>AI</span>list</h5>
             <p>La tua community per creare, condividere e scoprire outfit ispirati.</p>
           </Col>
 

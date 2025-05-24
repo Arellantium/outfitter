@@ -35,7 +35,7 @@ const slidesData = [
     buttonIcon: <FaStream size="1em" className="me-2" />,
     action: 'scroll',
     target: 'feed-section',
-    objectPosition: 'center 44%',
+    objectPosition: 'center 43%',
     buttonStyleKey: 'defaultButton',
   },
   {
@@ -44,11 +44,11 @@ const slidesData = [
     alt: 'Crea e condividi il tuo outfit',
     title: 'Mostra il Tuo Stile Unico',
     description: 'Crea post, condividi i tuoi look e diventa una fonte d\'ispirazione.',
-    buttonText: '+ Pubblica Outfit',
+    buttonText: ' Pubblica Outfit',
     buttonIcon: <FaPlusCircle size="1em" className="me-2" />,
     action: 'modal',
     target: 'createPost',
-    objectPosition: 'center 49%', // MODIFICATO per spostare l'immagine un po' in su
+    objectPosition: 'center 47%', // MODIFICATO per spostare l'immagine un po' in su
     buttonStyleKey: 'defaultButton',
   }
 ];
