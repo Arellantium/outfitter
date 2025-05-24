@@ -1,4 +1,5 @@
 # app/routers/post_foto.py
+import os 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
@@ -12,6 +13,14 @@ from sqlalchemy import select, desc
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
+# Ottieni la base directory del progetto (root di "outfitter")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # questo è "outfitter/app/routers/"
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "..\.."))  # questo è "outfitter/"
+# Percorso assoluto alla cartella "frontend/public/images"
+UPLOAD_DIR = os.path.join(ROOT_DIR, "frontend\public\images")
+# Crea la cartella se non esiste
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+    
 @router.post("/", response_model=PostOut, tags=["post"])
 async def create_post(
     description: str = Form(...),
@@ -45,13 +54,12 @@ async def create_post(
     await db.refresh(post)
 
     # Salva il file immagine
-    os.makedirs("images", exist_ok=True)
-    file_location = f"images/{post.id}_{image.filename}"
+    file_location = os.path.join(UPLOAD_DIR, image.filename)
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
     # Aggiorna il campo image_url nel post
-    post.image_url = file_location
+    post.image_url = "/images/" + image.filename
     await db.commit()
     await db.refresh(post)
 

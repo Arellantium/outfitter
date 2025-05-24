@@ -30,16 +30,23 @@ const PhotoGrid = () => {
   const imagesAlreadyLoaded = images && images.length > 0;
 
   const fetchImages = useCallback(async () => {
-    if (imagesAlreadyLoaded) return;
-    try {
-      dispatch(fetchImagesStart());
-      const allImagesData = require('../mock/allImages.json');
-      await new Promise((r) => setTimeout(r, 500));
-      dispatch(fetchImagesSuccess(allImagesData));
-    } catch (err) {
-      dispatch(fetchImagesError(err.message));
-    }
-  }, [dispatch, imagesAlreadyLoaded]);
+  if (imagesAlreadyLoaded) return;
+  try {
+    dispatch(fetchImagesStart());
+    const token = localStorage.getItem('access_token');
+    const res = await fetch('http://localhost:8006/outfit-posts', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) throw new Error(`Errore: ${res.status}`);
+    const data = await res.json();
+    dispatch(fetchImagesSuccess(data));
+  } catch (err) {
+    dispatch(fetchImagesError(err.message));
+  }
+}, [dispatch, imagesAlreadyLoaded]);
 
   useEffect(() => {
     if (!imagesAlreadyLoaded) {

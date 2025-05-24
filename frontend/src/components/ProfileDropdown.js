@@ -10,7 +10,7 @@ const ProfileDropdown = () => {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item href="/profilo">
+        <Dropdown.Item href="/profile">
           <FaUser className="me-2" />
           Mio Profilo
         </Dropdown.Item>

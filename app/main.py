@@ -74,3 +74,4 @@ async def root():
     logger.info("Chiamata all'endpoint root")
     return {"message": "Hello World"}
 
+
