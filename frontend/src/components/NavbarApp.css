@@ -1,119 +1,158 @@
 /* Importa i font all'inizio del tuo file CSS principale o qui */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+/* Font per il logo come nella landing page */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+/* Font Montserrat non è più usato per il logo qui, ma lo lascio se serve per altro */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap');
+
 
 .app-navbar {
   width: 100%;
   z-index: 1030; /* Default per fixed navbar in Bootstrap */
   background-color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07); /* Ombra più morbida e definita */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-/* --- LOGO --- */
+/* --- LOGO (Stile aggiornato con colori differenziati) --- */
 .logo-text {
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(1.7rem, 4vw, 2rem); /* Dimensione font responsive */
+  font-family: 'Playfair Display', serif; /* Font dalla LandingPage */
+  font-size: 2.2rem;                      /* Dimensione dalla LandingPage */
+  font-weight: 700;                       /* Peso dalla LandingPage */
   cursor: pointer;
-  line-height: 1; /* Migliora allineamento verticale */
-  user-select: none; /* Impedisce la selezione del testo del logo */
+  line-height: 1;
+  user-select: none;
+  transition: transform 0.2s ease-in-out;
 }
 
+.logo-text:hover {
+  transform: scale(1.03);
+}
+
+/* Colori specifici per le parti del logo */
 .logo-text .stailist-st,
 .logo-text .stailist-list {
-  color: #2c2c2c;
-  font-weight: 700;
+  color: #2c2c2c; /* Nero o grigio scuro per "st" e "list" */
+  /* Il font-weight è ereditato da .logo-text, quindi non serve ripeterlo qui
+     a meno che non si voglia un peso diverso per queste parti. */
 }
 
 .logo-text .stailist-ai {
-  color: #c1975c;
-  font-weight: 800;
+  color: #CAA870; /* Colore primario (#CAA870) dalla LandingPage per "AI" */
+  /* Il font-weight è ereditato da .logo-text */
 }
+
 
 /* --- SEARCH BAR --- */
 .search-bar-wrapper {
-  max-width: 600px; /* Aumenta leggermente la larghezza massima */
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .search-bar {
-  border-radius: 50px; /* Arrotondamento completo */
-  background-color: #f5f5f5; /* Sfondo grigio chiaro per la barra */
-  border: 1px solid #f0f0f0; /* Bordo molto sottile e chiaro */
-  overflow: hidden; /* Per contenere gli angoli arrotondati dell'input */
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: 50px;
+  background-color: #f5f5f5;
+  border: 1px solid #e9e9e9;
+  overflow: hidden;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
 .search-bar:focus-within {
-  border-color: #c1975c; /* Colore del tema al focus */
-  box-shadow: 0 0 0 0.18rem rgba(193, 151, 92, 0.2); /* Ombra esterna al focus */
-  background-color: #ffffff; /* Sfondo bianco al focus per maggiore contrasto */
+  border-color: #CAA870; /* Allineato al colore dorato di AI */
+  box-shadow: 0 0 0 0.2rem rgba(202, 168, 112, 0.25); /* Ombra con il colore dorato */
+  background-color: #ffffff;
 }
 
 .search-input {
-  background-color: transparent; /* Input trasparente */
+  background-color: transparent;
   border: none;
-  box-shadow: none !important; /* Override degli stili di Bootstrap */
+  box-shadow: none !important;
   font-size: 0.9rem;
   font-family: 'Poppins', sans-serif;
-  padding: 0.6rem 0.8rem; /* Padding interno per l'input */
+  font-weight: 400;
+  padding: 0.65rem 1rem;
   color: #333333;
 }
 
 .search-input::placeholder {
   color: #888888;
-  font-style: normal; /* Rimuove corsivo se non desiderato */
+  font-style: normal;
   font-weight: 400;
+  opacity: 0.8;
 }
 
-.search-icon-container { /* Stile per il contenitore dell'icona di Bootstrap */
+.search-icon-container {
   background-color: transparent;
   border: none;
-  padding-left: 0.9rem; /* Spazio a sinistra dell'icona */
-  padding-right: 0.2rem; /* Spazio tra icona e testo */
+  padding-left: 1rem;
+  padding-right: 0.3rem;
   display: flex;
   align-items: center;
 }
 
-.search-icon-actual { /* Stile per l'icona FaSearch */
+.search-icon-actual {
   color: #777777;
-  font-size: 0.9rem; /* Dimensione icona */
+  font-size: 0.95rem;
+  transition: color 0.2s ease-in-out;
 }
 
 .search-bar:focus-within .search-icon-actual {
-  color: #c1975c; /* Colore icona al focus */
+  color: #CAA870; /* Allineato al colore dorato di AI */
 }
 
 
 /* --- RIGHT ICONS (Profile & Cart) --- */
-/*
-  Se i componenti ProfileDropdown e CartIconWithBadge hanno bisogno di stili specifici
-  per le icone, puoi aggiungerli qui. Esempio:
-*/
-.profile-dropdown-toggle, /* Supponendo che ProfileDropdown usi una classe simile */
-.cart-icon-link {        /* Supponendo che CartIconWithBadge usi una classe simile */
-  color: #333;
-  font-size: 1.3rem; /* O la dimensione desiderata */
+.profile-dropdown-toggle,
+.cart-icon-link {
+  color: #4a4a4a;
+  font-size: 1.4rem;
   text-decoration: none;
-  transition: color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
 }
 
 .profile-dropdown-toggle:hover,
 .cart-icon-link:hover {
-  color: #c1975c; /* Colore del tema all'hover */
+  color: #CAA870; /* Usiamo il colore primario della landing page anche qui per coerenza */
+  transform: scale(1.1);
 }
 
 /* Media query per aggiustamenti specifici se necessario */
-@media (max-width: 767.98px) { /* Bootstrap breakpoint sm */
+@media (max-width: 767.98px) {
   .app-navbar {
     padding-top: 0.6rem;
     padding-bottom: 0.6rem;
   }
   .logo-text {
-    font-size: 1.6rem; /* Logo leggermente più piccolo su mobile */
+    font-size: clamp(1.8rem, 5vw, 2.0rem); /* Esempio di adattamento */
   }
   .search-bar-wrapper {
-    max-width: 100%; /* Occupa tutta la larghezza disponibile su mobile */
+    max-width: 100%;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
+  .search-input {
+    padding: 0.6rem 0.8rem;
+  }
+  .profile-dropdown-toggle,
+  .cart-icon-link {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .logo-text {
+    margin-left: 0.5rem !important;
+    font-size: clamp(1.7rem, 6vw, 1.9rem); /* Ulteriore adattamento per schermi molto piccoli */
+  }
+  .d-flex.align-items-center.gap-3 {
+    gap: 0.8rem !important;
+  }
+   .d-flex.align-items-center.me-2 {
+    margin-right: 0.5rem !important;
+   }
 }
