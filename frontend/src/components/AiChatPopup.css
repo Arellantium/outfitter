@@ -1,0 +1,260 @@
+/* src/components/AiChatPopup.css */
+
+/* Assicurati che le variabili --lp-... siano definite globalmente,
+   altrimenti i fallback verranno usati. */
+:root {
+    /* NUOVE variabili specifiche per la chat per il marroncino più chiaro */
+    --chat-specific-primary-color: #D4B488; /* Marroncino più chiaro */
+    --chat-specific-primary-darker: #B89966; /* Suo complementare per hover, leggermente più scuro del nuovo primario */
+
+    /* Variabili della chat che ora usano le versioni specifiche o i fallback globali */
+    --chat-popup-primary-color: var(--chat-specific-primary-color);
+    --chat-popup-primary-darker: var(--chat-specific-primary-darker);
+    
+    --chat-popup-text-on-primary: var(--lp-text-on-primary, #FFFFFF);
+    
+    --chat-popup-bg: var(--lp-bg-accent, #FAF8F1);
+    --chat-popup-surface: var(--lp-card-bg, #FFFFFF);
+    
+    --chat-popup-text-main: var(--lp-text-main, #333333);
+    --chat-popup-text-secondary: var(--lp-text-secondary, #555555);
+
+    --chat-popup-border-light: rgba(0, 0, 0, 0.1);
+    --chat-popup-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.ai-chat-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    z-index: 1090;
+    padding: 20px;
+}
+
+.ai-chat-popup {
+    width: 370px;
+    height: 550px;
+    background-color: var(--chat-popup-bg);
+    border: 1px solid var(--chat-popup-border-light);
+    border-radius: 16px;
+    box-shadow: var(--chat-popup-shadow);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+}
+
+.ai-chat-popup.maximized {
+    width: 70vw;
+    height: 85vh;
+    max-width: 900px;
+    max-height: 700px;
+}
+
+.ai-chat-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background-color: var(--chat-popup-primary-color); /* Usa il marroncino più chiaro */
+    color: var(--chat-popup-text-on-primary);
+    flex-shrink: 0;
+}
+
+.ai-chat-popup-title {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.ai-chat-popup-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-chat-control-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: var(--chat-popup-text-on-primary);
+    opacity: 0.85;
+    line-height: 1;
+}
+.ai-chat-control-button:hover {
+    opacity: 1;
+}
+.ai-chat-control-button svg {
+    display: block;
+}
+
+
+/* Stili per la Intro View */
+.ai-chat-intro-view {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px 25px;
+    background-color: var(--chat-popup-bg);
+    color: var(--chat-popup-text-main);
+}
+
+.intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--chat-popup-text-main);
+    margin-bottom: 0.8rem;
+}
+
+.intro-subtitle {
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    color: var(--chat-popup-text-secondary);
+    max-width: 300px;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.intro-start-button {
+    /* Usa il marroncino più chiaro e il suo complementare per il gradiente */
+    background: linear-gradient(135deg, var(--chat-popup-primary-color), var(--chat-popup-primary-darker));
+    color: var(--chat-popup-text-on-primary);
+    border: none;
+    border-radius: 50px;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.intro-start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+
+/* Stili per i messaggi e input (adattati per il nuovo tema) */
+.ai-chat-popup-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--chat-popup-bg);
+}
+
+.ai-chat-message {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    line-height: 1.45;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+    color: var(--chat-popup-text-main);
+}
+
+.ai-chat-message.user {
+    background-color: var(--chat-popup-primary-color); /* Usa il marroncino più chiaro */
+    color: var(--chat-popup-text-on-primary);
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+}
+
+.ai-chat-message.ai {
+    background-color: var(--chat-popup-surface);
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    border: 1px solid var(--chat-popup-border-light);
+}
+
+.ai-chat-message.ai.loading-dots p span {
+    background-color: var(--chat-popup-text-secondary);
+}
+@keyframes blink {
+    0% { opacity: .2; }
+    20% { opacity: 1; }
+    100% { opacity: .2; }
+}
+.ai-chat-message.ai.loading-dots span {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin: 0 2.5px;
+    animation: blink 1.4s infinite both;
+}
+.ai-chat-message.ai.loading-dots span:nth-child(2) { animation-delay: .2s; }
+.ai-chat-message.ai.loading-dots span:nth-child(3) { animation-delay: .4s; }
+
+
+.ai-chat-popup-input-area {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-top: 1px solid var(--chat-popup-border-light);
+    background-color: var(--chat-popup-surface);
+    flex-shrink: 0;
+}
+
+.ai-chat-popup-input-area input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid var(--chat-popup-border-light);
+    border-radius: 20px;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    outline: none;
+    background-color: var(--chat-popup-bg);
+    color: var(--chat-popup-text-main);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ai-chat-popup-input-area input::placeholder {
+    color: var(--chat-popup-text-secondary);
+    opacity: 0.7;
+}
+.ai-chat-popup-input-area input:focus {
+    border-color: var(--chat-popup-primary-color); /* Usa il marroncino più chiaro */
+    /* Aggiornato il colore RGBA per il box-shadow per corrispondere a #D4B488 (212, 180, 136) */
+    box-shadow: 0 0 0 0.2rem rgba(212, 180, 136, 0.25); 
+    background-color: var(--chat-popup-surface);
+}
+
+.ai-chat-send-button {
+    background-color: var(--chat-popup-primary-color); /* Usa il marroncino più chiaro */
+    color: var(--chat-popup-text-on-primary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+.ai-chat-send-button:hover:not(:disabled) {
+    background-color: var(--chat-popup-primary-darker); /* Usa il complementare più scuro (del nuovo primario) */
+}
+.ai-chat-send-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+.ai-chat-send-button svg {
+    fill: var(--chat-popup-text-on-primary);
+    stroke: var(--chat-popup-text-on-primary);
+}
