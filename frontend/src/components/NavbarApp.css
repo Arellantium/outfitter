@@ -1,31 +1,119 @@
+/* Importa i font all'inizio del tuo file CSS principale o qui */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500&display=swap');
+
 .app-navbar {
-    width: 100%;
-    z-index: 1000;
+  width: 100%;
+  z-index: 1030; /* Default per fixed navbar in Bootstrap */
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07); /* Ombra più morbida e definita */
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+/* --- LOGO --- */
+.logo-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.7rem, 4vw, 2rem); /* Dimensione font responsive */
+  cursor: pointer;
+  line-height: 1; /* Migliora allineamento verticale */
+  user-select: none; /* Impedisce la selezione del testo del logo */
+}
+
+.logo-text .stailist-st,
+.logo-text .stailist-list {
+  color: #2c2c2c;
+  font-weight: 700;
+}
+
+.logo-text .stailist-ai {
+  color: #c1975c;
+  font-weight: 800;
+}
+
+/* --- SEARCH BAR --- */
+.search-bar-wrapper {
+  max-width: 600px; /* Aumenta leggermente la larghezza massima */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-bar {
+  border-radius: 50px; /* Arrotondamento completo */
+  background-color: #f5f5f5; /* Sfondo grigio chiaro per la barra */
+  border: 1px solid #f0f0f0; /* Bordo molto sottile e chiaro */
+  overflow: hidden; /* Per contenere gli angoli arrotondati dell'input */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.search-bar:focus-within {
+  border-color: #c1975c; /* Colore del tema al focus */
+  box-shadow: 0 0 0 0.18rem rgba(193, 151, 92, 0.2); /* Ombra esterna al focus */
+  background-color: #ffffff; /* Sfondo bianco al focus per maggiore contrasto */
+}
+
+.search-input {
+  background-color: transparent; /* Input trasparente */
+  border: none;
+  box-shadow: none !important; /* Override degli stili di Bootstrap */
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  padding: 0.6rem 0.8rem; /* Padding interno per l'input */
+  color: #333333;
+}
+
+.search-input::placeholder {
+  color: #888888;
+  font-style: normal; /* Rimuove corsivo se non desiderato */
+  font-weight: 400;
+}
+
+.search-icon-container { /* Stile per il contenitore dell'icona di Bootstrap */
+  background-color: transparent;
+  border: none;
+  padding-left: 0.9rem; /* Spazio a sinistra dell'icona */
+  padding-right: 0.2rem; /* Spazio tra icona e testo */
+  display: flex;
+  align-items: center;
+}
+
+.search-icon-actual { /* Stile per l'icona FaSearch */
+  color: #777777;
+  font-size: 0.9rem; /* Dimensione icona */
+}
+
+.search-bar:focus-within .search-icon-actual {
+  color: #c1975c; /* Colore icona al focus */
+}
+
+
+/* --- RIGHT ICONS (Profile & Cart) --- */
+/*
+  Se i componenti ProfileDropdown e CartIconWithBadge hanno bisogno di stili specifici
+  per le icone, puoi aggiungerli qui. Esempio:
+*/
+.profile-dropdown-toggle, /* Supponendo che ProfileDropdown usi una classe simile */
+.cart-icon-link {        /* Supponendo che CartIconWithBadge usi una classe simile */
+  color: #333;
+  font-size: 1.3rem; /* O la dimensione desiderata */
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.profile-dropdown-toggle:hover,
+.cart-icon-link:hover {
+  color: #c1975c; /* Colore del tema all'hover */
+}
+
+/* Media query per aggiustamenti specifici se necessario */
+@media (max-width: 767.98px) { /* Bootstrap breakpoint sm */
+  .app-navbar {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
   }
-  
   .logo-text {
-    font-size: 2.0rem;
-    font-weight: bold;
+    font-size: 1.6rem; /* Logo leggermente più piccolo su mobile */
   }
-  
-  .search-bar {
-    max-width: 500px;
-    border-radius: 25px;
-    border: 1px solid #ccc;
-    overflow: hidden;
+  .search-bar-wrapper {
+    max-width: 100%; /* Occupa tutta la larghezza disponibile su mobile */
   }
-  
-  .search-input {
-    border: none;
-    box-shadow: none !important;
-  }
-  
-  .search-icon {
-    background-color: white;
-    border: none;
-  }
-  
-  .nav-icon {
-    color: #444;
-    cursor: pointer;
-  }
+}

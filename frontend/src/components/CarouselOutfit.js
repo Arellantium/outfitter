@@ -4,20 +4,17 @@ import { Carousel, Button, CarouselItem, CarouselCaption } from 'react-bootstrap
 import { FaArrowAltCircleLeft, FaArrowAltCircleRight, FaMagic, FaStream, FaPlusCircle } from 'react-icons/fa';
 import CreatePost from './CreatePost'; // Assicurati che questo sia il CreatePost.js aggiornato con il campo prezzo
 
-// Definizione di themeColors usata in CreatePost, potrebbe essere utile per lo sfondo del modale
-// Se non è già centralizzata, potresti volerla mettere in un file separato e importarla
 const themeColors = {
   primary: '#d9a86c',
   primaryDarker: '#b08d57',
-  secondary: '#f0e9e0', // Sfondo pagina chiaro / beige (potrebbe essere lo sfondo del contenitore del modale)
-  surface: '#ffffff', // Sfondo dei form/card (usato da CreatePost internamente)
-  // ...altri colori se necessari
+  secondary: '#f0e9e0',
+  surface: '#ffffff',
 };
 
 const slidesData = [
   {
     id: 'ai-slide',
-    src: "https://cdn.shopify.com/s/files/1/0577/2515/7538/files/1.png?v=1720522011",
+    src: "https://cdn.shopify.com/s/files/1/0577/2515/7538/files/look_7.jpg?v=1689157238",
     alt: 'Intelligenza Artificiale e Innovazione nella Moda',
     title: 'Il Futuro dello Stile è AI',
     description: 'Sperimenta outfit generati dall\'AI e consigli di stile, su misura per te.',
@@ -25,12 +22,12 @@ const slidesData = [
     buttonIcon: <FaMagic size="1em" className="me-2" />,
     action: 'navigate',
     target: '/landingPage',
-    objectPosition: 'center 40%',
+    objectPosition: 'center 35%',
     buttonStyleKey: 'defaultButton',
   },
   {
     id: 'feed-slide',
-    src: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1920&auto=format&fit=crop',
+    src: 'https://cdn.shopify.com/s/files/1/0577/2515/7538/t/3/assets/img_2075-1666011104627.jpg?v=1666011138',
     alt: 'Feed di ispirazioni di moda',
     title: 'Un Mondo di Ispirazione',
     description: 'Immergiti nel feed: outfit, tendenze e la creatività della nostra community.',
@@ -38,20 +35,20 @@ const slidesData = [
     buttonIcon: <FaStream size="1em" className="me-2" />,
     action: 'scroll',
     target: 'feed-section',
-    objectPosition: 'center center',
+    objectPosition: 'center 44%',
     buttonStyleKey: 'defaultButton',
   },
   {
     id: 'create-post-slide',
-    src: 'https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?q=80&w=1920&auto=format&fit=crop',
+    src: 'https://cdn.shopify.com/s/files/1/0577/2515/7538/t/3/assets/facetune_08122022025329-1670881657612.JPG?v=1670881666',
     alt: 'Crea e condividi il tuo outfit',
     title: 'Mostra il Tuo Stile Unico',
     description: 'Crea post, condividi i tuoi look e diventa una fonte d\'ispirazione.',
     buttonText: '+ Pubblica Outfit',
     buttonIcon: <FaPlusCircle size="1em" className="me-2" />,
     action: 'modal',
-    target: 'createPost', // Questo identifica l'azione del modale
-    objectPosition: 'center 30%',
+    target: 'createPost',
+    objectPosition: 'center 49%', // MODIFICATO per spostare l'immagine un po' in su
     buttonStyleKey: 'defaultButton',
   }
 ];
@@ -78,7 +75,6 @@ const buttonStyles = {
       color: '#FFFFFF',
     }
   }
-  // aiButton: { ... } // Se hai altri stili di bottone
 };
 
 const CarouselOutfit = () => {
@@ -91,17 +87,9 @@ const CarouselOutfit = () => {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
         console.warn(`[CarouselOutfit] Elemento con ID '${target}' non trovato.`);
-        // Potresti voler navigare a '/' o a una pagina di errore se l'elemento non è trovato
-        // navigate('/'); // Se usi useNavigate da react-router-dom
       }
     } else if (action === 'navigate') {
-      // È preferibile usare useNavigate per la navigazione interna all'app React
-      // window.location.href = target; // Questo causa un full page reload
-      // Se hai react-router-dom configurato, dovresti importare useNavigate:
-      // import { useNavigate } from 'react-router-dom';
-      // const navigate = useNavigate();
-      // navigate(target);
-      // Per ora, lascio window.location.href come nel tuo codice originale, ma considera di cambiarlo.
+      // Considera di usare useNavigate da react-router-dom se il tuo progetto lo utilizza
       window.location.href = target;
     } else if (action === 'modal' && target === 'createPost') {
       setShowModal(true);
@@ -120,12 +108,20 @@ const CarouselOutfit = () => {
         prevIcon={<FaArrowAltCircleLeft size={35} style={{ color: 'rgba(255, 255, 255, 0.9)', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.7))' }} />}
         nextIcon={<FaArrowAltCircleRight size={35} style={{ color: 'rgba(255, 255, 255, 0.9)', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.7))' }} />}
         fade
-        indicators={true} // Assicurati che sia 'true' e non solo 'indicators'
+        indicators={true}
       >
         {slidesData.map((slide) => {
           const currentButtonStyles = buttonStyles[slide.buttonStyleKey] || buttonStyles.defaultButton;
           return (
-            <CarouselItem key={slide.id} style={{ minHeight: '420px', height: '65vh', maxHeight: '700px', backgroundColor: '#777' }}>
+            <CarouselItem
+              key={slide.id}
+              style={{
+                minHeight: '500px',
+                height: '75vh',
+                maxHeight: '850px',
+                backgroundColor: '#777' // Fallback background se l'immagine non carica
+              }}
+            >
               <img
                 className="d-block w-100 h-100"
                 src={slide.src}
@@ -133,30 +129,45 @@ const CarouselOutfit = () => {
                 style={{ objectFit: 'cover', objectPosition: slide.objectPosition || 'center center' }}
                 onError={(e) => {
                   console.error(`Errore caricamento immagine per slide "${slide.alt}": ${e.target.src}`);
+                  // Log 추가: 어떤 이미지가 로드되지 않았는지, 어떤 에러가 발생했는지 확인 (Commento originale dell'utente mantenuto)
+                  console.log('Errore target:', e.target);
+                  console.log('Errore evento:', e);
                   e.target.style.display = 'none'; // Nasconde l'immagine rotta
                   const parentItem = e.target.closest('.carousel-item');
                   if (parentItem) {
-                    parentItem.style.backgroundColor = '#DDD'; // Sfondo di fallback
+                    parentItem.style.backgroundColor = '#DDD'; // Sfondo di fallback più scuro
+                    // Fallback text if image fails
+                    const fallbackText = document.createElement('p');
+                    fallbackText.innerText = `Impossibile caricare: ${slide.alt}`;
+                    fallbackText.style.position = 'absolute';
+                    fallbackText.style.top = '50%';
+                    fallbackText.style.left = '50%';
+                    fallbackText.style.transform = 'translate(-50%, -50%)';
+                    fallbackText.style.color = '#333';
+                    fallbackText.style.textAlign = 'center';
+                    fallbackText.style.padding = '20px';
+                    fallbackText.style.fontFamily = "'Poppins', sans-serif"; // Aggiunto font per coerenza
+                    parentItem.appendChild(fallbackText);
                   }
                 }}
               />
               <CarouselCaption
-                className="px-4 py-3" // Bootstrap class per padding
+                className="px-4 py-3"
                 style={{
                   backgroundColor: 'rgba(0, 0, 0, 0.40)',
-                  borderRadius: '0.375rem', // Bootstrap default per sm rounded corners
-                  bottom: 'clamp(1rem, 5vh, 2.5rem)', // Responsive bottom positioning
-                  left: '5%', // Padding laterale per la caption
+                  borderRadius: '0.375rem',
+                  bottom: 'clamp(1rem, 5vh, 2.5rem)',
+                  left: '5%',
                   right: '5%',
                   textAlign: 'center',
                 }}
               >
-                <div style={{ maxWidth: '700px', margin: '0 auto' }}> {/* Contenitore per centrare e limitare la larghezza del testo */}
+                <div style={{ maxWidth: '700px', margin: '0 auto' }}>
                   <h2
-                    className="mb-2" // Bootstrap class per margin-bottom
+                    className="mb-2"
                     style={{
-                      fontFamily: "'Playfair Display', serif", // Consigliato per titoli eleganti
-                      fontSize: 'clamp(1.7rem, 4.5vw, 2.7rem)', // Responsive font size
+                      fontFamily: "'Playfair Display', serif",
+                      fontSize: 'clamp(1.7rem, 4.5vw, 2.7rem)',
                       fontWeight: 700,
                       color: '#FFFFFF',
                       textShadow: '1px 1px 5px rgba(0,0,0,0.8)'
@@ -165,10 +176,10 @@ const CarouselOutfit = () => {
                     {slide.title}
                   </h2>
                   <p
-                    className="d-none d-md-block mb-3" // Nasconde su schermi piccoli, margin-bottom
+                    className="d-none d-md-block mb-3"
                     style={{
-                      fontFamily: "'Poppins', sans-serif", // Consigliato per testo leggibile
-                      fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', // Responsive font size
+                      fontFamily: "'Poppins', sans-serif",
+                      fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
                       color: 'rgba(250, 250, 250, 0.95)',
                       lineHeight: 1.55,
                       textShadow: '1px 1px 3px rgba(0,0,0,0.7)'
@@ -179,7 +190,7 @@ const CarouselOutfit = () => {
                   {slide.buttonText && (
                     <Button
                       onClick={() => handleAction(slide.action, slide.target)}
-                      className="mt-1" // Bootstrap class per margin-top
+                      className="mt-1"
                       style={currentButtonStyles.base}
                       onMouseEnter={(e) => Object.assign(e.currentTarget.style, currentButtonStyles.hover)}
                       onMouseLeave={(e) => Object.assign(e.currentTarget.style, currentButtonStyles.base)}
@@ -197,36 +208,33 @@ const CarouselOutfit = () => {
 
       {/* MODALE PER CREATE POST */}
       {showModal && (
-        <div // Questo è l'OVERLAY
+        <div
           style={{
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.65)', // Sfondo scuro semitrasparente
+            backgroundColor: 'rgba(0, 0, 0, 0.65)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            zIndex: 1050, // Assicura che sia sopra gli altri contenuti (Bootstrap usa 1040-1050 per modali)
-            padding: '20px', // Aggiunge un po' di spazio dai bordi dello schermo per il box del modale
+            zIndex: 1050,
+            padding: '20px',
           }}
-          onClick={handleCloseModal} // Chiude il modale se si clicca sull'overlay
+          onClick={handleCloseModal}
         >
-          <div // Questo è il CONTENITORE DEL MODALE effettivo (per forma, ombra e scroll)
-            onClick={(e) => e.stopPropagation()} // Impedisce la chiusura se si clicca dentro il contenuto del modale
-            className="custom-modal-content-scroll" // Classe per eventuale stilizzazione della scrollbar (vedi CSS)
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="custom-modal-content-scroll" // Per eventuale CSS custom della scrollbar
             style={{
-              backgroundColor: 'transparent', // Lascia che CreatePost gestisca il suo sfondo bianco interno
-                                              // Se vuoi uno sfondo diverso per il "frame" del modale, usa es. themeColors.secondary
-              borderRadius: '20px', // Angoli arrotondati per il box del modale
-              boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)', // Ombra per dare profondità
-              width: '100%', // Occupa la larghezza disponibile (limitata da maxWidth)
-              maxWidth: '650px', // Larghezza massima del box del modale
-              maxHeight: '90vh', // Altezza massima, se il contenuto è più lungo, appare la scrollbar
-              overflowY: 'auto', // Mostra la scrollbar verticale solo se necessario
-              // NESSUN PADDING QUI: CreatePost.js gestisce il suo padding interno.
-              // Questo evita doppi padding e potenziali problemi di allineamento.
+              backgroundColor: 'transparent', // CreatePost gestisce il suo sfondo
+              borderRadius: '20px',
+              boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)',
+              width: '100%',
+              maxWidth: '650px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
             }}
           >
             <CreatePost isModal={true} onCloseModal={handleCloseModal} />

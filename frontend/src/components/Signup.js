@@ -1,36 +1,34 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap'; // Aggiunto InputGroup
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { Container, Row, Col, Form, Button } from 'react-bootstrap'; // InputGroup non era usato, rimosso per pulizia
+import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Potresti voler importare icone se necessario per i campi
-// import { FaCalendarAlt, FaGlobeAmericas, FaVenusMars } from 'react-icons/fa';
+// import { FaCalendarAlt, FaGlobeAmericas, FaVenusMars } from 'react-icons/fa'; // Esempio icone
 
-// Palette di colori (puoi centralizzarla in un file a parte se usata in più posti)
 const themeColors = {
-  primary: '#d9a86c', // Oro/Bronzo principale
+  primary: '#d9a86c',
   primaryDarker: '#b08d57',
-  secondary: '#f0e9e0', // Sfondo pagina chiaro / beige
-  accent: '#6c757d', // Grigio neutro per testo secondario o bordi
+  secondary: '#f0e9e0',
+  accent: '#6c757d',
   text: '#333',
   lightText: '#555',
-  surface: '#ffffff', // Sfondo dei form/card
+  surface: '#ffffff',
   error: '#d32f2f',
   success: '#388e3c',
   inputBorder: '#ced4da',
-  inputFocusBorder: '#c89f65', // Colore bordo input al focus
+  inputFocusBorder: '#c89f65',
 };
 
 function SignupPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // Aggiunto per conferma password
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [birthDate, setBirthDate] = useState('');
-  const [nationality, setNationality] = useState('');
+  // const [nationality, setNationality] = useState(''); // Rimosso
   const [gender, setGender] = useState('');
   const [errors, setErrors] = useState({});
 
-  const navigate = useNavigate(); // Hook per la navigazione
+  const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors = {};
@@ -45,11 +43,6 @@ function SignupPage() {
 
     if (password !== confirmPassword) newErrors.confirmPassword = 'Le password non coincidono';
 
-    // Validazioni opzionali per i nuovi campi (solo se vuoi che siano obbligatori)
-    // if (!birthDate) newErrors.birthDate = 'Inserisci la data di nascita';
-    // if (!nationality) newErrors.nationality = 'Seleziona la nazionalità';
-    // if (!gender) newErrors.gender = 'Seleziona il sesso';
-
     return newErrors;
   };
 
@@ -63,66 +56,63 @@ function SignupPage() {
 
     setErrors({});
     try {
-      const response = await fetch('http://localhost:8006/signup', { // Assicurati che l'URL sia corretto
+      const response = await fetch('http://localhost:8006/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        // Invia solo i dati necessari al backend.
-        // I campi aggiuntivi (birthDate, nationality, gender) sono solo estetici qui.
-        body: JSON.stringify({ username, password, email })
+        body: JSON.stringify({ username, password, email, birthDate, gender }) // Aggiunti birthDate e gender se vuoi mandarli
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log('Registrazione avvenuta con successo:', data);
         alert('Registrazione completata! Ora puoi effettuare il login.');
-        navigate('/login'); // Reindirizza alla pagina di login
+        navigate('/login');
       } else {
         const errorData = await response.json().catch(() => ({ detail: 'Errore sconosciuto dal server.' }));
         console.error('Errore dal server:', errorData);
-        // Mostra un errore più generico all'utente o uno specifico se disponibile
         setErrors({ form: errorData.detail || `Errore ${response.status}: ${response.statusText}` });
-        // alert(`Errore durante la registrazione: ${errorData.detail || response.statusText}`);
       }
     } catch (error) {
       console.error('Errore durante la registrazione:', error);
       setErrors({ form: 'Impossibile connettersi al server. Riprova più tardi.' });
-      // alert('Errore durante la registrazione. Controlla la console.');
     }
   };
 
-  const inputStyle = {
-    borderRadius: '25px', // Angoli più arrotondati per i campi
-    borderColor: errors.username ? themeColors.error : themeColors.inputBorder,
+  const inputStyleBase = {
+    borderRadius: '25px',
     padding: '0.75rem 1.25rem',
     fontSize: '0.95rem',
-    boxShadow: 'none', // Rimuove ombra di default al focus di Bootstrap
+    boxShadow: 'none',
   };
 
+  const getInputStyle = (fieldHasError) => ({
+    ...inputStyleBase,
+    borderColor: fieldHasError ? themeColors.error : themeColors.inputBorder,
+  });
+  
   const focusedInputStyle = {
     borderColor: themeColors.inputFocusBorder,
-    boxShadow: `0 0 0 0.25rem ${themeColors.inputFocusBorder}40`, // Ombra al focus personalizzata
+    // boxShadow: `0 0 0 0.25rem ${themeColors.inputFocusBorder}40`, // Ombra bootstrap-like, può essere rimossa se non voluta
   };
 
 
   return (
-    <Container fluid className="min-vh-100 d-flex p-0" style={{ backgroundColor: themeColors.secondary }}>
-      <Row className="w-100 g-0 align-items-stretch"> {/* align-items-stretch per far sì che le colonne prendano tutta l'altezza */}
-        {/* Colonna Immagine */}
+    <Container fluid className="min-vh-100 d-flex p-0" style={{ backgroundColor: themeColors.secondary, overflow: 'hidden' }}> {/* overflow: 'hidden' per rimuovere scrollbars */}
+      <Row className="w-100 g-0 align-items-stretch">
         <Col md={6} className="d-none d-md-block p-0">
           <div
             style={{
-              backgroundImage: 'url(https://compass-media.vogue.it/photos/6703a668e6a3c9f0869f1908/4:3/w_1920,c_limit/GettyImages-2173423733.jpg)',
+              backgroundImage: 'url(https://cdn.shopify.com/s/files/1/0577/2515/7538/files/La_Dolce_Vita_2.png?v=1716226691)',
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              height: '100%', // Prende l'altezza del genitore (Row -> Container)
+              backgroundPosition: 'center 40%', // Modificato per migliorare la visualizzazione dell'immagine
+              height: '100%',
             }}
           />
         </Col>
 
-        {/* Colonna Form */}
-        <Col xs={12} md={6} className="d-flex align-items-center justify-content-center py-5" style={{ backgroundColor: themeColors.surface }}>
+        <Col xs={12} md={6} className="d-flex align-items-center justify-content-center py-4 py-md-5" style={{ backgroundColor: themeColors.surface }}> {/* Ridotto padding verticale se necessario */}
           <div className="p-4 p-md-5" style={{ maxWidth: '480px', width: '100%' }}>
             <h1 className="text-center mb-3" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: themeColors.text }}>
               Crea il Tuo Account
@@ -142,7 +132,7 @@ function SignupPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   isInvalid={!!errors.username}
-                  style={inputStyle}
+                  style={getInputStyle(!!errors.username)}
                   onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
                   onBlur={(e) => e.target.style.borderColor = errors.username ? themeColors.error : themeColors.inputBorder}
                 />
@@ -157,7 +147,7 @@ function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   isInvalid={!!errors.email}
-                  style={inputStyle}
+                  style={getInputStyle(!!errors.email)}
                   onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
                   onBlur={(e) => e.target.style.borderColor = errors.email ? themeColors.error : themeColors.inputBorder}
                 />
@@ -172,7 +162,7 @@ function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   isInvalid={!!errors.password}
-                  style={inputStyle}
+                  style={getInputStyle(!!errors.password)}
                   onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
                   onBlur={(e) => e.target.style.borderColor = errors.password ? themeColors.error : themeColors.inputBorder}
                 />
@@ -187,14 +177,13 @@ function SignupPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   isInvalid={!!errors.confirmPassword}
-                  style={inputStyle}
+                  style={getInputStyle(!!errors.confirmPassword)}
                   onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
                   onBlur={(e) => e.target.style.borderColor = errors.confirmPassword ? themeColors.error : themeColors.inputBorder}
                 />
                 <Form.Control.Feedback type="invalid">{errors.confirmPassword}</Form.Control.Feedback>
               </Form.Group>
 
-              {/* Campi Aggiuntivi (Estetici) */}
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3" controlId="signupBirthDate">
@@ -203,7 +192,7 @@ function SignupPage() {
                       type="date"
                       value={birthDate}
                       onChange={(e) => setBirthDate(e.target.value)}
-                      style={inputStyle}
+                      style={getInputStyle(false)} // Non ha validazione di errore qui, quindi false
                       onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
                       onBlur={(e) => e.target.style.borderColor = themeColors.inputBorder}
                     />
@@ -215,7 +204,7 @@ function SignupPage() {
                     <Form.Select
                       value={gender}
                       onChange={(e) => setGender(e.target.value)}
-                      style={inputStyle}
+                      style={getInputStyle(false)} // Non ha validazione di errore qui, quindi false
                       onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
                       onBlur={(e) => e.target.style.borderColor = themeColors.inputBorder}
                     >
@@ -229,27 +218,15 @@ function SignupPage() {
                 </Col>
               </Row>
 
-              <Form.Group className="mb-4" controlId="signupNationality">
-                <Form.Label style={{ color: themeColors.lightText, fontSize: '0.9rem' }}>Nazionalità</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Es. Italiana"
-                  value={nationality}
-                  onChange={(e) => setNationality(e.target.value)}
-                  style={inputStyle}
-                  onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
-                  onBlur={(e) => e.target.style.borderColor = themeColors.inputBorder}
-                />
-              </Form.Group>
+              {/* Nazionalità rimossa */}
 
-
-              <div className="d-grid">
+              <div className="d-grid mt-2"> {/* Aggiunto un po' di margine sopra il bottone */}
                 <Button
                   type="submit"
                   style={{
                     background: `linear-gradient(to right, ${themeColors.primaryDarker}, ${themeColors.primary})`,
                     borderColor: themeColors.primary,
-                    color: themeColors.surface, // Testo bianco sul bottone
+                    color: themeColors.surface,
                     fontWeight: 'bold',
                     padding: '0.8rem',
                     borderRadius: '30px',
