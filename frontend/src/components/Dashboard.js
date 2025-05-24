@@ -1,35 +1,34 @@
-// src/Dashboard.js
-import React from 'react';
+import React, { useState } from 'react';
 import NavbarApp from './NavbarApp';
 import CarouselOutfit from './CarouselOutfit';
-import DashboardStats from './DashboardStats'; // Questo può rimanere in un container
+import DashboardStats from './DashboardStats';
 import PhotoGrid from './PhotoGrid';
 import Footer from './Footer';
+import AiChatPopup from './AiChatPopup';
 
 function Dashboard() {
+  const [isAiChatVisible, setIsAiChatVisible] = useState(false);
+
+  const handleShowAiChat = () => setIsAiChatVisible(true);
+  const handleCloseAiChat = () => setIsAiChatVisible(false);
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <NavbarApp />
       <main className="flex-grow-1">
-        {/* CarouselOutfit full-width */}
-        <CarouselOutfit />
+        <CarouselOutfit onShowAiChat={handleShowAiChat} />
 
-        {/* DashboardStats può rimanere dentro un container per avere margini */}
-        <div className="container py-4"> {/* Padding per DashboardStats */}
+        <div className="container py-4">
           <DashboardStats />
         </div>
 
-        {/* La sezione del feed ORA È FULL-WIDTH */}
-        {/* Applichiamo py-4 direttamente alla section per lo spazio verticale */}
-        {/* L'ID è qui per lo scroll */}
         <section id="feed-section" className="py-4">
-          {/* PhotoGrid ora gestirà il suo layout interno, potenzialmente usando container-fluid o padding diretti */}
-          {/* Il titolo della sezione può essere spostato dentro PhotoGrid o rimosso se PhotoGrid ne ha uno suo */}
           <PhotoGrid />
         </section>
-
       </main>
       <Footer />
+
+      {isAiChatVisible && <AiChatPopup onClose={handleCloseAiChat} />}
     </div>
   );
 }

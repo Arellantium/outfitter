@@ -1,14 +1,37 @@
-// src/components/CarouselOutfit.js
 import React, { useState } from 'react';
 import { Carousel, Button, CarouselItem, CarouselCaption } from 'react-bootstrap';
 import { FaArrowAltCircleLeft, FaArrowAltCircleRight, FaMagic, FaStream, FaPlusCircle } from 'react-icons/fa';
-import CreatePost from './CreatePost'; // Assicurati che questo sia il CreatePost.js aggiornato con il campo prezzo
+import CreatePost from './CreatePost';
 
 const themeColors = {
   primary: '#d9a86c',
   primaryDarker: '#b08d57',
   secondary: '#f0e9e0',
   surface: '#ffffff',
+};
+
+const buttonStyles = {
+  defaultButton: {
+    base: {
+      fontWeight: 500,
+      borderRadius: '25px',
+      padding: '0.7rem 1.6rem',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+      border: '1px solid rgba(255, 255, 255, 0.8)',
+      backgroundColor: 'rgba(255, 255, 255, 0.18)',
+      color: 'rgba(255, 255, 255, 0.95)',
+      boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
+      transition: 'all 0.2s ease-in-out',
+    },
+    hover: {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+      backgroundColor: 'rgba(255, 255, 255, 0.35)',
+      borderColor: 'rgba(255, 255, 255, 1)',
+      color: '#FFFFFF',
+    }
+  }
 };
 
 const slidesData = [
@@ -20,8 +43,7 @@ const slidesData = [
     description: 'Sperimenta outfit generati dall\'AI e consigli di stile, su misura per te.',
     buttonText: 'Inizia con l\'AI',
     buttonIcon: <FaMagic size="1em" className="me-2" />,
-    action: 'navigate',
-    target: '/landingPage',
+    action: 'openChat',
     objectPosition: 'center 35%',
     buttonStyleKey: 'defaultButton',
   },
@@ -48,36 +70,12 @@ const slidesData = [
     buttonIcon: <FaPlusCircle size="1em" className="me-2" />,
     action: 'modal',
     target: 'createPost',
-    objectPosition: 'center 47%', // MODIFICATO per spostare l'immagine un po' in su
+    objectPosition: 'center 47%',
     buttonStyleKey: 'defaultButton',
   }
 ];
 
-const buttonStyles = {
-  defaultButton: {
-    base: {
-      fontWeight: 500,
-      borderRadius: '25px',
-      padding: '0.7rem 1.6rem',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
-      border: '1px solid rgba(255, 255, 255, 0.8)',
-      backgroundColor: 'rgba(255, 255, 255, 0.18)',
-      color: 'rgba(255, 255, 255, 0.95)',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
-      transition: 'all 0.2s ease-in-out',
-    },
-    hover: {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-      backgroundColor: 'rgba(255, 255, 255, 0.35)',
-      borderColor: 'rgba(255, 255, 255, 1)',
-      color: '#FFFFFF',
-    }
-  }
-};
-
-const CarouselOutfit = () => {
+const CarouselOutfit = ({ onShowAiChat }) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleAction = (action, target) => {
@@ -85,14 +83,11 @@ const CarouselOutfit = () => {
       const element = document.getElementById(target);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        console.warn(`[CarouselOutfit] Elemento con ID '${target}' non trovato.`);
       }
-    } else if (action === 'navigate') {
-      // Considera di usare useNavigate da react-router-dom se il tuo progetto lo utilizza
-      window.location.href = target;
     } else if (action === 'modal' && target === 'createPost') {
       setShowModal(true);
+    } else if (action === 'openChat' && typeof onShowAiChat === 'function') {
+      onShowAiChat();
     }
   };
 
@@ -105,8 +100,8 @@ const CarouselOutfit = () => {
       <Carousel
         interval={4500}
         pause="hover"
-        prevIcon={<FaArrowAltCircleLeft size={35} style={{ color: 'rgba(255, 255, 255, 0.9)', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.7))' }} />}
-        nextIcon={<FaArrowAltCircleRight size={35} style={{ color: 'rgba(255, 255, 255, 0.9)', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.7))' }} />}
+        prevIcon={<FaArrowAltCircleLeft size={35} style={{ color: 'rgba(255, 255, 255, 0.9)' }} />}
+        nextIcon={<FaArrowAltCircleRight size={35} style={{ color: 'rgba(255, 255, 255, 0.9)' }} />}
         fade
         indicators={true}
       >
@@ -115,41 +110,13 @@ const CarouselOutfit = () => {
           return (
             <CarouselItem
               key={slide.id}
-              style={{
-                minHeight: '500px',
-                height: '75vh',
-                maxHeight: '850px',
-                backgroundColor: '#777' // Fallback background se l'immagine non carica
-              }}
+              style={{ minHeight: '500px', height: '75vh', maxHeight: '850px', backgroundColor: '#777' }}
             >
               <img
                 className="d-block w-100 h-100"
                 src={slide.src}
                 alt={slide.alt}
                 style={{ objectFit: 'cover', objectPosition: slide.objectPosition || 'center center' }}
-                onError={(e) => {
-                  console.error(`Errore caricamento immagine per slide "${slide.alt}": ${e.target.src}`);
-                  // Log 추가: 어떤 이미지가 로드되지 않았는지, 어떤 에러가 발생했는지 확인 (Commento originale dell'utente mantenuto)
-                  console.log('Errore target:', e.target);
-                  console.log('Errore evento:', e);
-                  e.target.style.display = 'none'; // Nasconde l'immagine rotta
-                  const parentItem = e.target.closest('.carousel-item');
-                  if (parentItem) {
-                    parentItem.style.backgroundColor = '#DDD'; // Sfondo di fallback più scuro
-                    // Fallback text if image fails
-                    const fallbackText = document.createElement('p');
-                    fallbackText.innerText = `Impossibile caricare: ${slide.alt}`;
-                    fallbackText.style.position = 'absolute';
-                    fallbackText.style.top = '50%';
-                    fallbackText.style.left = '50%';
-                    fallbackText.style.transform = 'translate(-50%, -50%)';
-                    fallbackText.style.color = '#333';
-                    fallbackText.style.textAlign = 'center';
-                    fallbackText.style.padding = '20px';
-                    fallbackText.style.fontFamily = "'Poppins', sans-serif"; // Aggiunto font per coerenza
-                    parentItem.appendChild(fallbackText);
-                  }
-                }}
               />
               <CarouselCaption
                 className="px-4 py-3"
@@ -206,7 +173,6 @@ const CarouselOutfit = () => {
         })}
       </Carousel>
 
-      {/* MODALE PER CREATE POST */}
       {showModal && (
         <div
           style={{
@@ -226,9 +192,9 @@ const CarouselOutfit = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="custom-modal-content-scroll" // Per eventuale CSS custom della scrollbar
+            className="custom-modal-content-scroll"
             style={{
-              backgroundColor: 'transparent', // CreatePost gestisce il suo sfondo
+              backgroundColor: 'transparent',
               borderRadius: '20px',
               boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)',
               width: '100%',
