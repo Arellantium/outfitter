@@ -10,6 +10,8 @@ from app.services.auth import get_current_user
 from typing import List
 from sqlalchemy import select, delete, exists, desc, and_, text
 from app.configuration.database import engine
+from sqlalchemy import cast, DateTime
+
 
 
 
@@ -257,15 +259,15 @@ async def aggiorna_articoli_outfit(
     await db.commit()
     return {"msg": f"{len(nuovi_articoli)} articoli aggiornati per outfit ID {id}"}
 
-@router.get("/outfit-posts",tags=["outfit"], response_model=List[OutfitPostResponse])
+@router.get("/outfit-posts", tags=["outfit"], response_model=List[OutfitPostResponse])
 async def get_outfit_posts(current_user_id: int = 1, db: AsyncSession = Depends(get_db)):
     stmt = (
         select(
             Utente.nome.label("user"),
             Post.id.label("id_image"),
             Post.image_url.label("uri"),
-            Outfit.prezzo_finale.label("price"),
-            Outfit.venduto.label("sold"),
+            Post.prezzo_finale.label("price"),
+            Post.venduto.label("sold"),
             Post.description.label("description"),
             exists().where(
                 and_(
@@ -274,10 +276,9 @@ async def get_outfit_posts(current_user_id: int = 1, db: AsyncSession = Depends(
                 )
             ).label("like")
         )
-        .join(Post, Outfit.post_id == Post.id)
-        .join(Utente, Post.author_id == Utente.id)  # oppure usa ForeignKey se disponibile
+        .join(Utente, Post.author_id == Utente.id)
         .where(Post.visibile == True)
-        .order_by(desc(Post.created_at))
+        .order_by(desc(cast(Post.created_at, DateTime)))  # Ordinamento dal più recente al meno recente
     )
 
     result = await db.execute(stmt)

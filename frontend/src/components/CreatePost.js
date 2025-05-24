@@ -276,10 +276,10 @@ function CreatePost({ isModal = false, onCloseModal }) {
     const data = new FormData();
     data.append('description', description);
     data.append('image', image);
-    data.append('price', parseFloat(price).toFixed(2));
+    data.append('prezzo_finale', parseFloat(price).toFixed(2));
 
     try {
-      const res = await fetch('http://localhost:8000/posts/', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: data });
+      const res = await fetch('http://localhost:8006/posts/', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: data });
       if (res.ok) {
         alert('Post caricato con successo!');
         setDescription(''); setImage(null); setPrice(''); setPreviewUrl(''); setError('');

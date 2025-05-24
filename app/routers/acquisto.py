@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.auth import get_current_user
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configuration.dependencies_database import get_db
-from app.models.models import Acquisto, Utente, Outfit, Articolo
+from app.models.models import Acquisto, Utente, Post
 from app.schemas.acquistoCreate import AcquistoCreate
 from app.schemas.acquistoOut import AcquistoOut
 from app.services.auth import get_current_user
+
 
 router = APIRouter()
 
@@ -140,3 +141,33 @@ async def delete_acquisto(
     db.delete(acquisto)
     db.commit()
     return 
+
+@router.get("/acquisti_miei", tags=["acquisti"])
+async def get_user_acquisti(
+    db: AsyncSession = Depends(get_db),
+    current_user_name: str = Depends(get_current_user)
+):
+    result = await db.execute(select(Utente).where(Utente.nome == current_user_name))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+
+    stmt = (
+        select(Post, Acquisto)
+        .join(Acquisto, Acquisto.post_id == Post.id)
+        .where(Acquisto.utente_id == user.id)
+        .order_by(desc(Acquisto.data_acquisto))
+    )
+    result = await db.execute(stmt)
+    records = result.all()
+
+    return [
+        {
+            "post_id": post.id,
+            "description": post.description,
+            "image_url": post.image_url,
+            "prezzo_pagato": acquisto.prezzo_pagato,
+            "data_acquisto": acquisto.data_acquisto
+        }
+        for post, acquisto in records
+    ]

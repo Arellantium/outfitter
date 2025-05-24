@@ -16,19 +16,27 @@ class Utente(Base):
 
 class Post(Base):
     __tablename__ = "post"
-   
+
     id = Column(Integer, primary_key=True, index=True)
+    
+    # Info base del post
     description = Column(String, nullable=False)
-    author_id = Column(Integer, ForeignKey("utente.id"), nullable=False)
     image_url = Column(String, nullable=True)
-    created_at = Column(String, nullable=False)  # ISO 8601, esempio: 2025-05-03T11:00:00Z
+    created_at = Column(String, nullable=False, default=datetime.utcnow().isoformat)  # oppure usa DateTime
+    
+    # Relazione con l'autore
+    author_id = Column(Integer, ForeignKey("utente.id"), nullable=False)
+    autore = relationship("Utente", backref="post")
+
+    # Campi social
+    visualizzazioni = Column(Integer, default=0)
+    stato = Column(String, default="pubblicato")  # "pubblicato", "bozza"
+    visibile = Column(Boolean, default=True)
     likes = Column(Integer, default=0)
 
-    # Campi social e visibilità
-    visualizzazioni = Column(Integer, default=0)
-    stato = Column(String, default="pubblicato")  # es. "pubblicato", "bozza"
-    visibile = Column(Boolean, default=True)
-    autore = relationship("Utente", backref="post")
+    # Campi outfit
+    prezzo_finale = Column(Float, nullable=True)  # oppure Float/Decimal se vuoi precisione monetaria
+    venduto = Column(Boolean, default=False)
   
 
 class Articolo(Base):
@@ -39,7 +47,7 @@ class Articolo(Base):
     nome = Column(String, nullable=False)
     taglia = Column(String, nullable=False)
     condizione = Column(String, nullable=False)
-    prezzo = Column(Float, default=0)
+    prezzo = Column(String, default=0)
     venduto = Column(Boolean, default=False)
 
     outfit_id = Column(Integer, ForeignKey("outfit.id", ondelete="SET NULL"), nullable=True)  # 🔗 relazione
@@ -62,8 +70,7 @@ class Acquisto(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     utente_id = Column(Integer, nullable=False)
-    articolo_id = Column(Integer, nullable=True)
-    outfit_id = Column(Integer, nullable=True)
+    post_id = Column(Integer, nullable=True)
     data_acquisto = Column(String, nullable=False)
     prezzo_pagato = Column(Float, nullable = False)
 
@@ -152,4 +159,3 @@ class ShippingInfo(Base):
     phone = Column(String, nullable=False)
 
     utente = relationship("Utente", backref="shipping_infos")
-
