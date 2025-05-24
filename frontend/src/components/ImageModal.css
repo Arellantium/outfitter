@@ -51,19 +51,21 @@
   color: #fff;
 }
 
-/* Immagine sopra */
+/* Immagine sopra - Modificato */
 .image-modal-image-container-v2 {
   width: 100%;
+  max-height: 80vh; /* Nuovo: limite di altezza */
   background-color: #000;
   display: flex;
   justify-content: center;
   align-items: center;
-  aspect-ratio: 1 / 1; /* immagine quadrata */
+  overflow: hidden; /* Evita overflow */
 }
+
 .image-modal-img-v2 {
   max-width: 100%;
   max-height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* Nuovo: non taglia l’immagine */
 }
 
 /* Dettagli sotto */
@@ -125,9 +127,16 @@
 .modal-action-btn:hover {
   opacity: 0.6;
 }
+
 .modal-action-btn.liked svg {
-  color: var(--insta-modal-heart-liked);
+  color: #ff0000 !important;
 }
+
+.modal-action-btn.likedButton {
+  background-color: #ff0000 !important;
+  color: #fff !important;
+}
+
 .modal-action-count {
   font-size: 0.85rem;
   font-weight: 600;

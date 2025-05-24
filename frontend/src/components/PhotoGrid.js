@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Masonry from 'react-masonry-css';
 import './PhotoGrid.css';
 import { useSelector, useDispatch } from 'react-redux';
@@ -27,32 +27,64 @@ const PhotoGrid = () => {
   const loading = useSelector((state) => state.images.loading);
   const error = useSelector((state) => state.images.error);
   const cartItems = useSelector((state) => state.cart.items);
-  const imagesAlreadyLoaded = images && images.length > 0;
+  //const imagesAlreadyLoaded = images && images.length > 0;
+
+  /* PAGINAZIONE */
+  const pageRef = useRef(1);
+  const loaderRef = useRef(null);
+  const hashMoreRef = useRef(true);
+
 
   const fetchImages = useCallback(async () => {
-  if (imagesAlreadyLoaded) return;
-  try {
-    dispatch(fetchImagesStart());
-    const token = localStorage.getItem('access_token');
-    const res = await fetch('http://localhost:8006/outfit-posts', {
-      headers: {
-        Authorization: `Bearer ${token}`
+    //if (imagesAlreadyLoaded) return;
+
+    try {
+      dispatch(fetchImagesStart());
+      const token = localStorage.getItem('access_token');
+      const res = await fetch(`http://localhost:8006/outfit-posts?page=${pageRef.current}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) throw new Error(`Errore: ${res.status}`);
+      const data = await res.json();
+
+      if (data.length === 0) {
+        hashMoreRef.current = false;
+      } else {
+        dispatch(fetchImagesSuccess(data));
+        pageRef.current += 1;
       }
-    });
+      
+    } catch (err) {
+      dispatch(fetchImagesError(err.message));
+    }
+  }, [dispatch]);
 
-    if (!res.ok) throw new Error(`Errore: ${res.status}`);
-    const data = await res.json();
-    dispatch(fetchImagesSuccess(data));
-  } catch (err) {
-    dispatch(fetchImagesError(err.message));
-  }
-}, [dispatch, imagesAlreadyLoaded]);
-
-  useEffect(() => {
+  /*useEffect(() => {
     if (!imagesAlreadyLoaded) {
       fetchImages();
     }
-  }, [fetchImages, imagesAlreadyLoaded]);
+  }, [fetchImages, imagesAlreadyLoaded]);*/
+
+  useEffect(() => {
+    if (!loaderRef.current || !hashMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+      if (entries[0].isIntersecting && !loading) {
+        fetchImages();
+      }
+    },
+    {threshold: 1});
+
+    observer.observe(loaderRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [fetchImages, loading]);
 
   const handleToggleLike = (id_image) => {
     dispatch(toggleLike(id_image));
@@ -76,7 +108,7 @@ const PhotoGrid = () => {
 
   const breakpointColumnsObj = { default: 3, 1100: 3, 992: 2, 700: 2, 576: 1 };
 
-  if (loading && !imagesAlreadyLoaded) return <div className="loading text-center mt-5 py-5">Caricamento immagini...</div>;
+  //if (loading && !imagesAlreadyLoaded) return <div className="loading text-center mt-5 py-5">Caricamento immagini...</div>;
   if (error) return <div className="text-danger text-center mt-5 py-5">Errore nel caricamento: {error}</div>;
   if (!images && !loading && !error) return <div className="text-center mt-5 py-5">Nessuna immagine da visualizzare.</div>;
 
@@ -132,33 +164,33 @@ const PhotoGrid = () => {
                   alt={img.description || `Immagine ${img.id_image}`}
                   className="card-img-top-masonry"
                 />
-                {!img.sold && (
+                
                   <div className="card-image-overlay">
                     <div className="card-overlay-top">
                       <button className={`card-icon-btn ${img.like ? 'liked' : ''}`} onClick={(e) => { e.stopPropagation(); handleToggleLike(img.id_image); }} aria-label="like">♥</button>
+                      {!img.sold && (
                       <button className={`card-icon-btn ${isInCart ? 'card-icon-btn-remove' : ''}`} onClick={(e) => { e.stopPropagation(); handleToggleCart(); }} aria-label="add to cart" disabled={img.sold}>{isInCart ? '−' : '＋'}</button>
+                      )}
                     </div>
                     <div className="card-overlay-bottom">
                       <span className="card-username">{img.user || 'Utente Sconosciuto'}</span>
                       <span className="card-price">{typeof img.price === 'string' || typeof img.price === 'number' ? `${parseFloat(img.price).toFixed(2)} €` : 'N/D'}</span>
                     </div>
                   </div>
-                )}
+                
               </div>
             </div>
           );
         })}
       </Masonry>
 
+      {hashMoreRef.current && (
+        <div ref={loaderRef} className="loading">Caricamento...</div>
+      )}  
+
       {imageToView && (
         <ImageModal
-          imageUrl={imageToView.uri}
-          imageDetails={{
-            user: imageToView.user,
-            likes: imageToView.likes_count,
-            isLiked: imageToView.like,
-            description: imageToView.description,
-          }}
+          imageId={imageToView.id_image}
           onClose={closeModal}
         />
       )}
