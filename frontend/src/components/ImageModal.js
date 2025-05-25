@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleLike } from '../redux/reducers/imagesSliceReducer';
 import './ImageModal.css';
 import { addToCart, removeFromCart } from '../redux/reducers/cartReducer';
+import { Link } from 'react-router-dom';
 
 const ImageModal = ({ imageId, onClose }) => {
   const dispatch = useDispatch();
@@ -79,7 +80,10 @@ const ImageModal = ({ imageId, onClose }) => {
             ) : (
               <FaUserCircle size={28} className="modal-user-icon" />
             )}
-            <span>{image.user || 'Utente Sconosciuto'}</span>
+            
+            <Link to={`/profile/${image.user_id}`}>
+              <span>{image.user || 'Utente Sconosciuto'}</span>
+            </Link>
           </div>
 
           {image.description && (

@@ -205,3 +205,4 @@ async def get_utente_by_username(username: str, db: AsyncSession = Depends(get_d
     if user is None:
         raise HTTPException(status_code=404, detail="Utente non trovato")
     return user
+

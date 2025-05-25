@@ -171,3 +171,7 @@
   background-color: var(--stallist-secondary-hover-bg, #f0f0f0);
   transform: scale(1.02);
 }
+
+modal-user-info a{
+  text-decoration: none;
+}

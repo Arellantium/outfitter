@@ -1,5 +1,6 @@
 # app/routers/post_foto.py
-import os 
+import os
+from typing import List 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
@@ -161,3 +162,14 @@ async def like_post(post_id: int, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(post)
     return post
+
+@router.get("/utenti/{utente_id}/post", response_model=List[PostOut])
+async def get_post_by_user_id(
+    utente_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(PostModel).where(PostModel.author_id == utente_id))
+    posts = result.scalars().all()
+    if not posts:
+        raise HTTPException(status_code=404, detail="Nessun post trovato per questo utente")
+    return posts

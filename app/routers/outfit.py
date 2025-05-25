@@ -274,6 +274,7 @@ async def get_posts_feed_paginati_async(db: Session = Depends(get_db), current_u
     stmt = (
         select(
             Post.id.label("id"),
+            Utente.id.label("user_id"),
             Utente.nome.label("user"),
             Post.id.label("id_image"),
             Post.description,
@@ -295,6 +296,7 @@ async def get_posts_feed_paginati_async(db: Session = Depends(get_db), current_u
     return [
         OutfitPostResponse(
             user=row.user,
+            user_id=str(row.user_id),
             id_image=str(row.id_image),
             uri=row.uri,
             price=str(row.price),
