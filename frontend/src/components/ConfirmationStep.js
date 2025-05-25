@@ -27,6 +27,30 @@ const ConfirmationStep = () => {
 
   useEffect(() => {
     // Marca come venduto e svuota il carrello
+      const createAcquisti = async () => {
+    try {
+      const acquistoPromises = itemsToDisplay.map(async (item) => {
+        if (item && item.id_image) {
+          const token = localStorage.getItem('access_token');
+          const response = await fetch('http://localhost:8006/acquisti',{
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },body: JSON.stringify({ 
+            post_id: item.id_image,
+            prezzo_pagato: item.price })
+        });
+          console.log(`Acquisto creato per post ${item.id_image}:`, response.data);
+        }
+      });
+
+      await Promise.all(acquistoPromises);
+    } catch (error) {
+      console.error('Errore durante la creazione degli acquisti:', error);
+    }
+  };
+
     if (orderNumber && itemsToDisplay.length > 0) {
       itemsToDisplay.forEach(item => {
         if (item && item.id_image) {
@@ -34,6 +58,7 @@ const ConfirmationStep = () => {
         }
       });
       dispatch(clearCart());
+      createAcquisti();
     }
 
     // Cleanup: resetta lo stato del checkout quando il componente viene smontato

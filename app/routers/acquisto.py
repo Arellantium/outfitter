@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.auth import get_current_user
 from sqlalchemy import select, desc
 from sqlalchemy.orm import Session
+from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configuration.dependencies_database import get_db
 from app.models.models import Acquisto, Utente, Post
@@ -48,15 +49,22 @@ async def create_acquisto(
 
     nuovo_acquisto = Acquisto(
         utente_id=utente.id,
-        outfit_id=acquisto.outfit_id,
-        articolo_id=acquisto.articolo_id,
+        post_id=acquisto.post_id,
+        data_acquisto=datetime.utcnow().isoformat(),
         prezzo_pagato=acquisto.prezzo_pagato
     )
 
     db.add(nuovo_acquisto)
+    
+    result1 = await db.execute(select(Post).where(Post.id == acquisto.post_id))
+    post = result1.scalars().first()
+    if not post:
+        raise HTTPException(status_code=404, detail="post non trovato")
+
+    post.venduto = True
+
     await db.commit()
     await db.refresh(nuovo_acquisto)
-
     return nuovo_acquisto
 
 

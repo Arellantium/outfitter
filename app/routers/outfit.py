@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from app.configuration.dependencies_database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.models import Outfit, Articolo, Utente, Post, Like
@@ -8,9 +8,9 @@ from app.schemas.outfitOut import OutfitOut
 from app.schemas.outiftPostResponse import OutfitPostResponse
 from app.services.auth import get_current_user
 from typing import List
-from sqlalchemy import select, delete, exists, desc, and_, text
+from sqlalchemy import select, delete, desc, text, func
 from app.configuration.database import engine
-from sqlalchemy import cast, DateTime
+from sqlalchemy import cast, Integer
 
 
 
@@ -260,29 +260,37 @@ async def aggiorna_articoli_outfit(
     return {"msg": f"{len(nuovi_articoli)} articoli aggiornati per outfit ID {id}"}
 
 @router.get("/outfit-posts", tags=["outfit"], response_model=List[OutfitPostResponse])
-async def get_outfit_posts(current_user_id: int = 1, db: AsyncSession = Depends(get_db)):
+async def get_posts_feed_paginati_async(db: Session = Depends(get_db), current_user: str = Depends(get_current_user), pagina: int = 1, per_pagina: int = 10):
+    
+    result = await db.execute(select(Utente).where(Utente.nome == current_user))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+    
+    LikeAlias = aliased(Like)
+
+    offset = (pagina - 1) * per_pagina
+
     stmt = (
         select(
+            Post.id.label("id"),
             Utente.nome.label("user"),
             Post.id.label("id_image"),
+            Post.description,
             Post.image_url.label("uri"),
             Post.prezzo_finale.label("price"),
             Post.venduto.label("sold"),
-            Post.description.label("description"),
-            exists().where(
-                and_(
-                    Like.utente_id == current_user_id,
-                    Like.post_id == Post.id
-                )
-            ).label("like")
+            func.coalesce(LikeAlias.id.isnot(None), False).label("like")
         )
+        .outerjoin(LikeAlias, (LikeAlias.post_id == Post.id) & (LikeAlias.utente_id == user.id))
         .join(Utente, Post.author_id == Utente.id)
-        .where(Post.visibile == True)
-        .order_by(desc(cast(Post.created_at, DateTime)))  # Ordinamento dal più recente al meno recente
+        .order_by(Post.created_at.desc())
+        .limit(per_pagina)
+        .offset(offset)
     )
-
+    print(pagina, ".......", per_pagina, "................", offset)
     result = await db.execute(stmt)
-    rows = result.all()
+    rows = result.fetchall()
 
     return [
         OutfitPostResponse(
@@ -296,6 +304,7 @@ async def get_outfit_posts(current_user_id: int = 1, db: AsyncSession = Depends(
         )
         for row in rows
     ]
+
 
 @router.post("/init-author-id")
 async def inizializza_author_id():
