@@ -10,7 +10,10 @@ import {
     Card // Useremo Card per il contenitore principale
 } from 'react-bootstrap';
 
-const API_BASE = "http://localhost:8006"; // Il tuo URL base dell'API
+// Assicurati che il font Inter sia importato nel tuo file HTML principale o CSS globale
+// Esempio in index.html: <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+const API_BASE = "http://localhost:800"; // Il tuo URL base dell'API
 
 function UserProfilePageStAylist() {
     const [token, setToken] = useState(null);
@@ -18,6 +21,7 @@ function UserProfilePageStAylist() {
     const [followersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
 
+    const [wardrobeItems, setWardrobeItems] = useState([]);
     const [postsItems, setPostsItems] = useState([]);
     const [savedItems, setSavedItems] = useState([]); // Non presente nello script originale, ma c'è la tab
     const [boughtItems, setBoughtItems] = useState([]);
@@ -28,7 +32,7 @@ function UserProfilePageStAylist() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("access_token");
+        const storedToken = localStorage.getItem("token");
         if (storedToken) {
             setToken(storedToken);
         } else {
@@ -103,11 +107,15 @@ function UserProfilePageStAylist() {
 
         try {
             switch (tabKey) {
+                case 'wardrobe':
+                    data = await fetchData(`/outfit/by_user/${userData.id}`);
+                    if (!data.error) setWardrobeItems(data || []);
+                    break;
                 case 'posts':
                     // Il tuo JS originale filtrava i post lato client.
                     // Idealmente, il backend dovrebbe fornire un endpoint per i post dell'utente.
                     // Qui replico il filtro, ma considera di modificarlo.
-                    const allPosts = await fetchData(`/posts/my-post`);
+                    const allPosts = await fetchData(`/posts`);
                     if (!allPosts.error) {
                         const userPostsData = allPosts.filter(p => p.author === userData.nome);
                         setPostsItems(userPostsData || []);
@@ -115,12 +123,12 @@ function UserProfilePageStAylist() {
                     break;
                 case 'saved':
                     // Aggiungi qui la logica per caricare gli elementi salvati
-                    data = await fetchData(`/saved/salvati`);
+                    // data = await fetchData(`/saved/by_user/${userData.id}`);
                     setSavedItems([]); // Placeholder
                     console.warn("Logica per 'Saved' non implementata nell'API originale.");
                     break;
                 case 'bought':
-                    data = await fetchData(`/acquisti_miei`);
+                    data = await fetchData(`/acquisti/miei`);
                     if (!data.error) setBoughtItems(data || []);
                     break;
                 default:
@@ -160,6 +168,10 @@ function UserProfilePageStAylist() {
 
 
         switch (activeTab) {
+            case 'wardrobe':
+                return wardrobeItems.length > 0 ? (
+                    wardrobeItems.map(o => <div key={o.id}><strong>{o.nome}</strong> – €{o.prezzo_finale}</div>)
+                ) : <p className="text-muted">No items in wardrobe.</p>;
             case 'posts':
                 return postsItems.length > 0 ? (
                     postsItems.map(p => (
@@ -299,7 +311,9 @@ function UserProfilePageStAylist() {
                     </Row>
 
                     <Nav variant="pills" activeKey={activeTab} onSelect={handleSelectTab} className="custom-profile-tabs mb-4">
-
+                        <Nav.Item>
+                            <Nav.Link eventKey="wardrobe">Wardrobe</Nav.Link>
+                        </Nav.Item>
                         <Nav.Item>
                             <Nav.Link eventKey="posts">Posts</Nav.Link>
                         </Nav.Item>
