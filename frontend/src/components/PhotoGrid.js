@@ -41,7 +41,7 @@ const PhotoGrid = () => {
     try {
       dispatch(fetchImagesStart());
       const token = localStorage.getItem('access_token');
-      const res = await fetch(`http://localhost:8006/outfit-posts?page=${pageRef.current}`, {
+      const res = await fetch(`http://localhost:8006/outfit-posts?pagina=${pageRef.current}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
