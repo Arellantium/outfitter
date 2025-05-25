@@ -1,11 +1,11 @@
 // src/components/SignupPage.js
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker'; // Importa react-datepicker
-import 'react-datepicker/dist/react-datepicker.css'; // Importa gli stili di default
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import { FaCalendarAlt } from 'react-icons/fa'; // Puoi aggiungere un'icona se vuoi
+// import { FaCalendarAlt } from 'react-icons/fa';
 
 const themeColors = {
   primary: '#d9a86c',
@@ -21,12 +21,31 @@ const themeColors = {
   inputFocusBorder: '#c89f65',
 };
 
+// Componente CustomInput per DatePicker
+const CustomDateInput = forwardRef(
+  ({ value, onClick, onChange, placeholder, hasError, inputStyle, customOnFocus, customOnBlur }, ref) => (
+  <Form.Control
+    type="text"
+    value={value}
+    onClick={onClick}
+    onChange={onChange}
+    placeholder={placeholder}
+    ref={ref}
+    style={inputStyle}
+    isInvalid={hasError}
+    onFocus={customOnFocus}
+    onBlur={customOnBlur}
+  />
+));
+CustomDateInput.displayName = 'CustomDateInput';
+
+
 function SignupPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [birthDate, setBirthDate] = useState(null); // Inizializza a null per react-datepicker
+  const [birthDate, setBirthDate] = useState(null);
   const [gender, setGender] = useState('');
   const [errors, setErrors] = useState({});
 
@@ -40,13 +59,20 @@ function SignupPage() {
     if (!email.trim()) newErrors.email = 'Inserisci un\'email';
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email non valida';
 
-    if (!password) newErrors.password = 'Inserisci una password';
-    else if (password.length < 6) newErrors.password = 'La password deve avere almeno 6 caratteri';
+    // Validazione password aggiornata
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (!password) {
+      newErrors.password = 'Inserisci una password';
+    } else if (password.length < 6) {
+      newErrors.password = 'La password deve avere almeno 6 caratteri';
+    } else if (!specialCharRegex.test(password)) {
+      newErrors.password = 'La password deve contenere almeno un carattere speciale (es. !@#$%)';
+    }
 
     if (password !== confirmPassword) newErrors.confirmPassword = 'Le password non coincidono';
     
-    // Aggiungi validazione per la data di nascita se necessario
-    // if (!birthDate) newErrors.birthDate = 'Seleziona la data di nascita';
+    if (!birthDate) newErrors.birthDate = 'Seleziona la data di nascita';
+    if (!gender) newErrors.gender = 'Seleziona il sesso';
 
     return newErrors;
   };
@@ -61,10 +87,9 @@ function SignupPage() {
 
     setErrors({});
     try {
-      // Formatta birthDate in YYYY-MM-DD se è un oggetto Date, altrimenti lasciala com'è
       const formattedBirthDate = birthDate instanceof Date 
         ? birthDate.toISOString().split('T')[0] 
-        : birthDate; // Se è già una stringa o null
+        : birthDate;
 
       const response = await fetch('http://localhost:8006/signup', {
         method: 'POST',
@@ -75,7 +100,7 @@ function SignupPage() {
             username, 
             password, 
             email, 
-            birthDate: formattedBirthDate, // Usa la data formattata
+            birthDate: formattedBirthDate,
             gender 
         })
       });
@@ -101,11 +126,11 @@ function SignupPage() {
     padding: '0.75rem 1.25rem',
     fontSize: '0.95rem',
     boxShadow: 'none',
-    width: '100%', // Assicura che occupi tutta la larghezza del suo contenitore (Col)
-    height: 'calc(1.5em + 1.5rem + 2px)', // Altezza standard Bootstrap per input
-    border: `1px solid ${themeColors.inputBorder}`, // Bordo di base
-    backgroundColor: themeColors.surface, // Sfondo bianco
-    color: themeColors.text, // Colore testo
+    width: '100%',
+    height: 'calc(1.5em + 1.5rem + 2px)',
+    border: `1px solid ${themeColors.inputBorder}`,
+    backgroundColor: themeColors.surface,
+    color: themeColors.text,
   };
 
   const getInputStyle = (fieldHasError) => ({
@@ -113,7 +138,7 @@ function SignupPage() {
     borderColor: fieldHasError ? themeColors.error : themeColors.inputBorder,
   });
   
-  const focusedInputStyle = { // Questo è usato per onFocus
+  const focusedInputStyle = {
     borderColor: themeColors.inputFocusBorder,
   };
 
@@ -144,7 +169,6 @@ function SignupPage() {
             {errors.form && <div className="alert alert-danger text-center" style={{fontSize: '0.9rem'}}>{errors.form}</div>}
 
             <Form onSubmit={handleSubmit} noValidate>
-              {/* Username, Email, Password, Confirm Password (invariati) */}
               <Form.Group className="mb-3" controlId="signupUsername">
                 <Form.Label style={{ color: themeColors.lightText, fontSize: '0.9rem' }}>Username</Form.Label>
                 <Form.Control
@@ -212,22 +236,25 @@ function SignupPage() {
                     <DatePicker
                       selected={birthDate}
                       onChange={(date) => setBirthDate(date)}
-                      dateFormat="dd/MM/yyyy" // Formato visualizzato
+                      dateFormat="dd/MM/yyyy"
                       placeholderText="Seleziona data"
-                      className="form-control" // Usa classe Bootstrap per lo stile base
-                      wrapperClassName="w-100" // Assicura che il wrapper prenda tutta la larghezza
-                      style={getInputStyle(!!errors.birthDate)} // Applica il tuo stile personalizzato
-                      onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
-                      onBlur={(e) => e.target.style.borderColor = errors.birthDate ? themeColors.error : themeColors.inputBorder}
+                      customInput={
+                        <CustomDateInput
+                          hasError={!!errors.birthDate}
+                          inputStyle={getInputStyle(!!errors.birthDate)}
+                          customOnFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
+                          customOnBlur={(e) => e.target.style.borderColor = errors.birthDate ? themeColors.error : themeColors.inputBorder}
+                        />
+                      }
+                      wrapperClassName="w-100"
                       showYearDropdown
                       showMonthDropdown
-                      dropdownMode="select" // Per dropdown più usabili su mobile
+                      dropdownMode="select"
                       peekNextMonth
                       scrollableYearDropdown
-                      yearDropdownItemNumber={70} // Quanti anni mostrare nel dropdown
-                      maxDate={new Date()} // Non si può selezionare una data futura
+                      yearDropdownItemNumber={70}
+                      maxDate={new Date()}
                     />
-                    {/* Puoi aggiungere un Form.Control.Feedback per gli errori di birthDate se aggiungi la validazione */}
                     {errors.birthDate && <div className="invalid-feedback d-block">{errors.birthDate}</div>}
                   </Form.Group>
                 </Col>
@@ -237,9 +264,10 @@ function SignupPage() {
                     <Form.Select
                       value={gender}
                       onChange={(e) => setGender(e.target.value)}
-                      style={getInputStyle(false)}
+                      isInvalid={!!errors.gender}
+                      style={getInputStyle(!!errors.gender)}
                       onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
-                      onBlur={(e) => e.target.style.borderColor = themeColors.inputBorder}
+                      onBlur={(e) => e.target.style.borderColor = errors.gender ? themeColors.error : themeColors.inputBorder}
                     >
                       <option value="">Seleziona...</option>
                       <option value="male">Maschio</option>
@@ -247,6 +275,7 @@ function SignupPage() {
                       <option value="other">Altro</option>
                       <option value="prefer_not_to_say">Preferisco non specificare</option>
                     </Form.Select>
+                    <Form.Control.Feedback type="invalid">{errors.gender}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>

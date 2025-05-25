@@ -106,7 +106,7 @@ const ImageModal = ({ imageId, onClose }) => {
             <button className={`modal-action-btn ${isInCart ? 'likedButton' : ''}`}
                     onClick={(e) => { e.stopPropagation(); handleToggleCart(); }}>
               <FaShoppingCart style={{ marginRight: '6px' }} />
-              <span>{isInCart ? 'Rimuove Carrello' : 'Acquista'}</span>
+              <span>{isInCart ? 'Rimuovi dal Carrello' : 'Acquista'}</span>
             </button>
           </div>
         </div>

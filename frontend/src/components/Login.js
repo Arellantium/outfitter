@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap'; // Card rimossa, non più necessaria
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 
-// Palette di colori (idealmente importata da un file comune)
+// Palette di colori
 const themeColors = {
   primary: '#d9a86c',
   primaryDarker: '#b08d57',
-  secondary: '#f0e9e0', // Sfondo pagina
+  secondary: '#f0e9e0',
   accent: '#6c757d',
   text: '#333',
   lightText: '#555',
-  surface: '#ffffff', // Sfondo colonna form
+  surface: '#ffffff',
   error: '#d32f2f',
   inputBorder: '#ced4da',
   inputFocusBorder: '#c89f65',
@@ -20,17 +20,26 @@ const themeColors = {
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({}); // Modificato per gestire errori specifici e di form
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!username.trim()) newErrors.username = 'Inserisci il tuo username.';
+    if (!password) newErrors.password = 'Inserisci la tua password.';
+    return newErrors;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
-
-    if (!username || !password) {
-      setError('Per favore, inserisci username e password.');
+    
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
+    
+    setErrors({}); // Pulisce gli errori di validazione se non ce ne sono più
 
     try {
       const response = await fetch('http://localhost:8006/token', {
@@ -47,13 +56,12 @@ function Login() {
             const errorData = await response.json();
             errorDetail = errorData.detail || errorDetail;
         } catch (jsonError) {
-            // Se la risposta d'errore non è JSON, usa il testo grezzo
             const errorText = await response.text();
             console.warn("La risposta d'errore non era JSON:", errorText);
-            if (errorText) errorDetail = errorText; // Usa il testo se disponibile
+            if (errorText) errorDetail = errorText;
         }
         console.error('Errore HTTP:', response.status, errorDetail);
-        setError(errorDetail);
+        setErrors({ form: errorDetail }); // Imposta l'errore nel campo 'form'
         return;
       }
    
@@ -63,40 +71,45 @@ function Login() {
       if (data.access_token && data.token_type) {
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('token_type', data.token_type);
-        // Potresti voler salvare anche l'username o l'ID utente se il backend lo restituisce
-        // localStorage.setItem('username', username); // Esempio
-        navigate('/'); // Reindirizza alla homepage o dashboard
+        navigate('/');
       } else {
         console.warn('Token non presente nella risposta:', data);
-        setError('Credenziali non valide o token non ricevuto.');
+        setErrors({ form: 'Credenziali non valide o token non ricevuto.' });
       }
     } catch (err) {
       console.error('Errore durante il login:', err);
-      setError('Errore di connessione o server non raggiungibile.');
+      setErrors({ form: 'Errore di connessione o server non raggiungibile.' });
     }
   };
 
-  const inputStyle = {
+  const inputStyleBase = {
     borderRadius: '25px',
-    borderColor: themeColors.inputBorder,
     padding: '0.75rem 1.25rem',
     fontSize: '0.95rem',
-    boxShadow: 'none', // Rimosso boxShadow di default
+    boxShadow: 'none',
+    width: '100%',
+    height: 'calc(1.5em + 1.5rem + 2px)',
+    border: `1px solid ${themeColors.inputBorder}`,
+    backgroundColor: themeColors.surface,
+    color: themeColors.text,
   };
 
+  const getInputStyle = (fieldHasError) => ({
+    ...inputStyleBase,
+    borderColor: fieldHasError ? themeColors.error : themeColors.inputBorder,
+  });
+  
   const focusedInputStyle = {
     borderColor: themeColors.inputFocusBorder,
-    // boxShadow: `0 0 0 0.25rem ${themeColors.inputFocusBorder}40`, // Rimosso per coerenza con Signup
   };
 
   return (
     <Container 
         fluid 
         className="min-vh-100 d-flex p-0"
-        style={{ backgroundColor: themeColors.secondary, overflow: 'hidden' }} // Aggiunto overflow: 'hidden'
+        style={{ backgroundColor: themeColors.secondary, overflow: 'hidden' }}
     >
       <Row className="w-100 g-0 align-items-stretch">
-        {/* Colonna Form (a sinistra) */}
         <Col xs={12} md={6} className="d-flex align-items-center justify-content-center py-5" style={{ backgroundColor: themeColors.surface }}>
           <div className="p-4 p-md-5" style={{ maxWidth: '480px', width: '100%' }}>
             <div className="text-center mb-4">
@@ -108,7 +121,7 @@ function Login() {
                 </p>
             </div>
 
-            {error && <div className="alert alert-danger text-center" style={{fontSize: '0.9rem'}}>{error}</div>} {/* Rimosso borderRadius specifico per uniformità */}
+            {errors.form && <div className="alert alert-danger text-center" style={{fontSize: '0.9rem'}}>{errors.form}</div>}
 
             <Form onSubmit={handleLogin} noValidate>
               <Form.Group className="mb-3" controlId="loginUsername">
@@ -118,11 +131,13 @@ function Login() {
                   placeholder="Il tuo username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  style={inputStyle}
+                  isInvalid={!!errors.username}
+                  style={getInputStyle(!!errors.username)}
                   onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
-                  onBlur={(e) => e.target.style.borderColor = themeColors.inputBorder}
-                  required
+                  onBlur={(e) => e.target.style.borderColor = errors.username ? themeColors.error : themeColors.inputBorder}
+                  // required // La validazione HTML5 può essere rimossa se gestita completamente da JS
                 />
+                <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-4" controlId="loginPassword">
@@ -132,11 +147,13 @@ function Login() {
                   placeholder="La tua password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={inputStyle}
+                  isInvalid={!!errors.password}
+                  style={getInputStyle(!!errors.password)}
                   onFocus={(e) => e.target.style.borderColor = focusedInputStyle.borderColor}
-                  onBlur={(e) => e.target.style.borderColor = themeColors.inputBorder}
-                  required
+                  onBlur={(e) => e.target.style.borderColor = errors.password ? themeColors.error : themeColors.inputBorder}
+                  // required
                 />
+                <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
               </Form.Group>
 
               <div className="d-grid mb-3">
@@ -183,15 +200,13 @@ function Login() {
           </div>
         </Col>
 
-        {/* Colonna Immagine (a destra) */}
         <Col md={6} className="d-none d-md-block p-0">
           <div
             style={{
               backgroundImage: 'url(https://cdn.shopify.com/s/files/1/0577/2515/7538/files/SnapInsta.to_499375822_18063235658118236_6844576782158291344_n_1658e177-30f8-4931-a849-30e2decbc2d2.jpg?v=1747729515)',
               backgroundSize: 'cover',
-              backgroundPosition: 'center 70%', // 'center top' per dare priorità alla parte alta del ritratto
+              backgroundPosition: 'center 70%',
               height: '100%',
-            
             }}
           />
         </Col>
