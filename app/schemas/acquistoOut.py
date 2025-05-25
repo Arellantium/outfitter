@@ -4,9 +4,10 @@ from typing import Optional
 
 class AcquistoOut(BaseModel):
     id: int
-    description: str
-    author: str
-    image_url: Optional[str]
+    utente_id: int
+    post_id: int
+    data_acquisto: str
+    prezzo_pagato: float
     
 
     class Config:
