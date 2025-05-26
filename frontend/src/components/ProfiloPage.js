@@ -161,11 +161,12 @@ function ProfilePage() {
             avatar_url: loggedInUserData.avatar_url || null,
           };
         } else {
-          const { data: otherUser, error: otherErr } = await fetchData(`/utente/${idNum}`);
+          const { data: otherUser, error: otherErr } = await fetchData(`/utenti/${idNum}`);
           if (otherErr || !otherUser?.id) {
             aggregatedError += `Dettagli utente: ${otherErr || 'non trovati'}\n`;
             core = { id: idNum, nome: `utente_${idNum}`, display_name: `Utente ${idNum}`, avatar_url: null };
           } else {
+            otherUser.display_name = otherUser.display_name || otherUser.nome;
             core = otherUser;
           }
         }
@@ -447,11 +448,11 @@ function ProfilePage() {
             <div
               className={`profile-avatar-wrapper ${isOwnProfile ? 'profile-avatar-wrapper-editable' : ''}`}
             >
-              {isOwnProfile && (
-                <div className="profile-avatar-overlay">
-                  <FaUserCircle size={60} />
-                </div>
-              )}
+              
+            <div className="profile-avatar-overlay">
+                <FaUserCircle size={60} />
+            </div>
+              
             </div>
             {isOwnProfile && (
               <Form.Control
