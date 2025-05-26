@@ -188,6 +188,4 @@ async def get_acquisti_by_user_id(
 ):
     result = await db.execute(select(Acquisto).where(Acquisto.utente_id == utente_id))
     acquisti = result.scalars().all()
-    if not acquisti:
-        raise HTTPException(status_code=404, detail="Nessun acquisto trovato per questo utente")
     return acquisti

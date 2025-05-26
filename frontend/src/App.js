@@ -25,7 +25,7 @@ function App() {
           element={isAuthenticated ? <CheckoutProcess /> : <Navigate to="/login" replace />}
         />
         <Route
-          path="/profile"
+          path="/profile/:id"
           element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" replace />}
         />
         <Route

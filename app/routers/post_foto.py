@@ -170,6 +170,4 @@ async def get_post_by_user_id(
 ):
     result = await db.execute(select(PostModel).where(PostModel.author_id == utente_id))
     posts = result.scalars().all()
-    if not posts:
-        raise HTTPException(status_code=404, detail="Nessun post trovato per questo utente")
     return posts
