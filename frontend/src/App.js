@@ -6,6 +6,7 @@ import CreatePost from './components/CreatePost.js';
 import DashboardPage from './components/Dashboard';
 import CheckoutProcess from './components/CheckoutProcess.js';
 import ProfilePage from './components/ProfiloPage.js';
+import SearchResultsPage from './components/SearchResultsPage';
 
 function App() {
   const token = localStorage.getItem('access_token');
@@ -31,6 +32,10 @@ function App() {
         <Route
           path="/create-post"
           element={isAuthenticated ? <CreatePost /> : <Navigate to="/login" replace />}
+        />
+         <Route
+          path="/search-results"
+          element={isAuthenticated ? <SearchResultsPage /> : <Navigate to="/login" replace />}
         />
       </Routes>
     </Router>
