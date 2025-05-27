@@ -6,7 +6,7 @@ import {
   FaEye,
   FaShoppingCart,
   FaImages,
-  FaComments
+  FaBox
 } from 'react-icons/fa';
 import './DashboardStats.css';
 import { fetchDashboardStats } from '../redux/reducers/dashboardStatsReducer';
@@ -45,9 +45,9 @@ const DashboardStats = () => {
       color: '#f6c23e'
     },
     {
-      title: 'Numero Feedback',
-      value: stats.numero_feedback,
-      icon: <FaComments />,
+      title: 'Numero Acquisti',
+      value: stats.numero_acquisti,
+      icon: <FaBox />,
       color: '#e74a3b'
     }
   ] : [];

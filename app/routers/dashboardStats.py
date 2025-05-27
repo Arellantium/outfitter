@@ -20,13 +20,16 @@ async def get_dashboard_metrics(session: AsyncSession = Depends(get_db)):
     feedback = await session.execute(select(func.count()).select_from(CommentoProfilo))
     numero_feedback = feedback.scalar_one()
 
+    acquisti = await session.execute(select(func.count()).select_from(Acquisto))
+    totale_acquisti = acquisti.scalar_one()
+
     # Simuliamo le visite al sito (non tracciate nel DB)
-    visite_sito = 9354  # puoi sostituire con valore dinamico o da Redis/logs
+    visite_sito = 82  # puoi sostituire con valore dinamico o da Redis/logs
 
     return {
         "utenti_iscritti": totale_utenti,
         "visite_sito": visite_sito,
         "totale_vendite": round(totale_vendite, 2),
         "totale_post": totale_post,
-        "numero_feedback": numero_feedback
+        "numero_acquisti": totale_acquisti
     }
