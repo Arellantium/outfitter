@@ -17,7 +17,7 @@ router = APIRouter(prefix="/social", tags=["Social Interactions"])
 # 1. LIKE / UNLIKE
 # =========================
 
-@router.post("/like/{post_id}")
+@router.put("/like/{post_id}")
 async def like_post(post_id: int, db: AsyncSession = Depends(get_db), current_user: str = Depends(get_current_user)):
     result = await db.execute(select(Post).filter_by(id=post_id))
     post = result.scalar_one_or_none()
@@ -40,7 +40,7 @@ async def like_post(post_id: int, db: AsyncSession = Depends(get_db), current_us
     return {"message": f"Like aggiunto al post {post_id}"}
 
 
-@router.post("/unlike/{post_id}")
+@router.put("/unlike/{post_id}")
 async def unlike_post(post_id: int, db: AsyncSession = Depends(get_db), current_user: str = Depends(get_current_user)):
     result = await db.execute(select(Post).filter_by(id=post_id))
     post = result.scalar_one_or_none()

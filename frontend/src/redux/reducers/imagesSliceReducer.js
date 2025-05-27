@@ -75,6 +75,23 @@ const imagesSlice = createSlice({
       const image = state.images.find(img => img.id_image === id);
       if (image) {
         image.like = !image.like;
+        
+        const token = localStorage.getItem('access_token');
+        if (image.like) {
+          const res =  fetch(`http://localhost:8006/social/like/${image.id_image}`, {
+            method: 'PUT',
+            headers: {
+            Authorization: `Bearer ${token}`
+          }
+          });
+        } else {
+          const res =  fetch(`http://localhost:8006/social/unlike/${image.id_image}`, {
+            method: 'PUT',
+            headers: {
+            Authorization: `Bearer ${token}`
+          }
+          });
+        }
       }
     },
     markAsSold(state, action) {
