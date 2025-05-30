@@ -1,8 +1,8 @@
-# Outfitters - Requisiti Tecnici e Specifiche Funzionali
+# StAIlist - Requisiti Tecnici e Specifiche Funzionali
 
-Benvenuto nel repository del progetto **Outfitters**. Questo documento descrive i requisiti tecnici e le specifiche funzionali principali della piattaforma. Outfitters è un'applicazione social-commerce incentrata sulla condivisione e vendita di outfit e articoli di moda.
+Benvenuto nel repository del progetto **StAIlist**. Questo documento descrive i requisiti tecnici e le specifiche funzionali principali della piattaforma. StAIlist è un'applicazione social-commerce incentrata sulla condivisione e vendita di outfit e articoli di moda.
 
-Outfitters è progettato per offrire un'esperienza intuitiva e interattiva per gli utenti che vogliono mostrare, scoprire e acquistare outfit curati, combinando elementi sociali con funzionalità e-commerce.
+StAIlist è progettato per offrire un'esperienza intuitiva e interattiva per gli utenti che vogliono mostrare, scoprire e acquistare outfit curati, combinando elementi sociali con funzionalità e-commerce.
 
 ---
 
@@ -10,7 +10,6 @@ Outfitters è progettato per offrire un'esperienza intuitiva e interattiva per g
 
 Gestione dell'accesso utenti tramite:
 - Email e password (con hashing sicuro tramite bcrypt)
-- Provider social: Google, Apple, Facebook (OAuth2)
 
 **Tabelle coinvolte:** `Utente`
 
@@ -42,7 +41,7 @@ Ogni post rappresenta un outfit, composto da immagini e articoli collegati.
 
 ##  Acquisto Articoli o Outfit
 
-Gli utenti possono acquistare un singolo articolo o un outfit completo.
+Gli utenti possono acquistare un outfit completo.
 
 **Tabelle:** `Acquisto`, `Articolo`, `Outfit`
 
