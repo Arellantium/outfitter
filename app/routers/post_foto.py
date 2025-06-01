@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 import shutil, os
 from app.configuration.dependencies_database import get_db
-from app.models.models import Post as PostModel, NascondiPost, Utente
+from app.models.models import Post as PostModel, Utente
 from app.services.auth import get_current_user
 from app.schemas.postOut import PostOut
 from app.schemas.common import MessageResponse
@@ -81,24 +81,6 @@ async def get_user_posts(username: str, db: AsyncSession = Depends(get_db)):
     )
     return result.scalars().all()
 
-@router.post("/nascondi/{post_id}", response_model=MessageResponse)
-async def nascondi_post(post_id: int, db: AsyncSession = Depends(get_db), current_user: str = Depends(get_current_user)):
-    result = await db.execute(Utente.__table__.select().where(Utente.nome == current_user))
-    user = result.scalar_one_or_none()
-    if not user:
-        raise HTTPException(status_code=404, detail="Utente non trovato")
-
-    result = await db.execute(NascondiPost.__table__.select().where(
-        NascondiPost.post_id == post_id,
-        NascondiPost.utente_id == user.id
-    ))
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Post già nascosto")
-
-    nascondi = NascondiPost(post_id=post_id, utente_id=user.id)
-    db.add(nascondi)
-    await db.commit()
-    return {"message": f"Post {post_id} nascosto"}
 
 @router.get("/my-post")
 async def get_user_posts(

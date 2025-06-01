@@ -1,7 +1,6 @@
 /* src/components/AiChatPopup.css */
 
-/* Assicurati che le variabili --lp-... siano definite globalmente,
-   altrimenti i fallback verranno usati. */
+
 :root {
     /* NUOVE variabili specifiche per la chat per il marroncino più chiaro */
     --chat-specific-primary-color: #D4B488; /* Marroncino più chiaro */

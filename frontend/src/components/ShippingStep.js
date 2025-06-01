@@ -1,4 +1,4 @@
-// ✅ ShippingStep.js aggiornato per Redux
+
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Spinner } from 'react-bootstrap';
 import { FaArrowRight } from 'react-icons/fa';

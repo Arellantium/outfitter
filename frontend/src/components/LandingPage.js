@@ -1,7 +1,7 @@
 // src/components/LandingPage.js
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Aggiunto useNavigate
-import './LandingPage.css'; // Assicurati che questo file CSS contenga gli stili forniti
+import './LandingPage.css'; 
 
 const ChatIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -81,13 +81,6 @@ const LandingPage = () => {
         </div>
     );
 };
-
-// Sostituisco il componente Button base con uno stilizzato se necessario,
-// o mi assicuro che le classi btn-ai e btn-primary-ai siano definite nel CSS.
-// Per semplicità, assumo che tu voglia un bottone standard di React (o HTML)
-// e che lo stile venga da classi CSS.
-// Se usi react-bootstrap Button, dovresti importarlo.
-// Per questo esempio, uso un tag <button> standard e le classi che hai definito.
 
 const Button = ({ className, onClick, children }) => (
     <button className={className} onClick={onClick}>

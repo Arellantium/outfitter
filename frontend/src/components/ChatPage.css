@@ -1,6 +1,5 @@
 /* ChatPage.css */
-/* Se le variabili :root sono globali, non serve ripeterle qui.
-   Altrimenti, assicurati che siano coerenti con LandingPage.css */
+
 :root {
     --lp-font-primary: 'Playfair Display', serif;
     --lp-font-secondary: 'Roboto', sans-serif;

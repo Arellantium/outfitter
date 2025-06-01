@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-from app.models.models import Utente, Post, Acquisto, CommentoProfilo
+from app.models.models import Utente, Post, Acquisto
 from app.configuration.dependencies_database import get_db
 
 router = APIRouter()
@@ -16,9 +16,6 @@ async def get_dashboard_metrics(session: AsyncSession = Depends(get_db)):
 
     vendite = await session.execute(select(func.sum(Acquisto.prezzo_pagato)))
     totale_vendite = vendite.scalar_one() or 0  # fallback se None
-
-    feedback = await session.execute(select(func.count()).select_from(CommentoProfilo))
-    numero_feedback = feedback.scalar_one()
 
     acquisti = await session.execute(select(func.count()).select_from(Acquisto))
     totale_acquisti = acquisti.scalar_one()

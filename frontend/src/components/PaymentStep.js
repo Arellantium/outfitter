@@ -1,4 +1,4 @@
-// ✅ PaymentStep.js aggiornato con validazione sicura + comportamento Sold Out in ConfirmationStep
+
 import React, { useState, useEffect, useRef } from 'react'; // Importa useRef
 import { useSelector, useDispatch } from 'react-redux';
 import { setPaymentData, goToPreviousStep } from '../redux/reducers/checkoutReducer';
@@ -35,7 +35,7 @@ const PaymentStep = () => {
   const [cardType, setCardType] = useState(null);
   const [activePaymentMethod, setActivePaymentMethod] = useState(formData.paymentMethod || 'card');
 
-  const formRef = useRef(null); // Aggiungi un ref per il form
+  const formRef = useRef(null); 
 
   useEffect(() => {
     if (formData.cardnumber) {
@@ -59,10 +59,6 @@ const PaymentStep = () => {
     }
 
     setFormData(prev => ({ ...prev, [name]: processedValue }));
-     // Se l'utente modifica un campo dopo che è stato visualizzato un errore,
-     // potresti voler resettare lo stato di 'validated' per i campi specifici o per l'intero form.
-     // Per semplicità, qui lo lascio così, ma in un'app complessa potresti voler
-     // validare on-the-fly o resettare `validated` se `formRef.current.checkValidity()` diventa true.
     if (validated) { // Resetta 'validated' se l'utente sta correggendo gli errori
         if (formRef.current && formRef.current.checkValidity()) {
             setValidated(false);
@@ -190,11 +186,11 @@ const PaymentStep = () => {
                   name="cardnumber"
                   value={formatCardNumber(formData.cardnumber || '')}
                   onChange={handleChange}
-                  pattern="[0-9\s]{15,23}" // Adjusted to allow spaces, actual validation happens in JS or backend
+                  pattern="[0-9\s]{15,23}" 
                   required
                   placeholder="•••• •••• •••• ••••"
                   disabled={isLoading}
-                  maxLength={23} // Max length for formatted number with spaces
+                  maxLength={23} 
                 />
                 <InputGroup.Text>{renderCardIcon()}</InputGroup.Text>
               </InputGroup>
@@ -232,7 +228,7 @@ const PaymentStep = () => {
                     name="cvv"
                     value={formData.cvv || ''}
                     onChange={handleChange}
-                    pattern="\d{3,4}" // 3 or 4 digits
+                    pattern="\d{3,4}"
                     required
                     placeholder="•••"
                     disabled={isLoading}

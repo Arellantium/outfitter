@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { Badge } from 'react-bootstrap';
-import CartModal from './CartModal'; // 👉 Assicurati che il percorso sia corretto
+import CartModal from './CartModal'; 
 
 const CartIconWithBadge = () => {
   const cartItems = useSelector((state) => state.cart.items);

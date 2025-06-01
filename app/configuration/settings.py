@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings  # ✅ CORRETTO per Pydantic v2+
+from pydantic_settings import BaseSettings 
 class Settings(BaseSettings):
     APP_NAME: str = "MyFastAPIApp"
     ENV: str = "development"

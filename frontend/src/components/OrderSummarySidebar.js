@@ -7,7 +7,6 @@ import { Card, ListGroup, Image, Form, Button, InputGroup, Alert } from 'react-b
 const OrderSummarySidebar = () => {
   const dispatch = useDispatch();
   const { outfitDetails, shippingData } = useSelector(state => state.checkout);
-  // Estrai isSingleItemWithSpecificName direttamente da outfitDetails per semplicità
   const isSingleItemWithSpecificName = outfitDetails?.isSingleItemWithSpecificName || false;
 
   const [discountCode, setDiscountCode] = useState('');

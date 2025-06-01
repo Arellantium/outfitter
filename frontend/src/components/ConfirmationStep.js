@@ -1,13 +1,13 @@
 // src/components/ConfirmationStep.js
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Card, ListGroup, Alert, Row, Col } from 'react-bootstrap'; // Rimosso 'Image' dagli import
+import { Button, Card, ListGroup, Alert, Row, Col } from 'react-bootstrap'; 
 import { Link, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaHome, FaShippingFast, FaCreditCard, FaPaypal } from 'react-icons/fa';
 
 import { clearCart } from '../redux/reducers/cartReducer';
 import { markAsSold } from '../redux/reducers/imagesSliceReducer';
-import { resetCheckout } from '../redux/reducers/checkoutReducer'; // Assicurati che il percorso sia corretto
+import { resetCheckout } from '../redux/reducers/checkoutReducer'; 
 
 const ConfirmationStep = () => {
   const dispatch = useDispatch();

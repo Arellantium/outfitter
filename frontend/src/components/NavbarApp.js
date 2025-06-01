@@ -3,11 +3,11 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Form, InputGroup, ListGroup, Spinner } from 'react-bootstrap'; // Rimosso Image
 import { FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import './NavbarApp.css'; // Assicurati che questo file esista e contenga gli stili necessari
+import './NavbarApp.css'; 
 import ProfileDropdown from './ProfileDropdown';
 import CartIconWithBadge from './CartIconWithBadge';
 
-const API_BASE = 'http://localhost:8006'; // Ancora necessario se hai altri fetch, ma non per avatar qui
+const API_BASE = 'http://localhost:8006'; 
 
 const NavbarApp = () => {
   const [query, setQuery] = useState('');

@@ -5,7 +5,7 @@ from app.configuration.database import engine
 from app.configuration.dependencies_database import get_db
 from app.models.models import Base, Utente
 from app.config import setup_logging
-from app.routers import pagamenti  # ✅ CORRETTA
+from app.routers import pagamenti 
 from app.routers import outfit, post_foto, social, metodi_pagamento
 from app.routers import saved, search, shipping
 from app.routers import ai, dashboardStats

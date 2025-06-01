@@ -39,32 +39,6 @@ class Post(Base):
     venduto = Column(Boolean, default=False)
   
 
-class Articolo(Base):
-    __tablename__ = "articolo"
-   
-    id = Column(Integer, primary_key=True, index=True)
-    post_id = Column(Integer)
-    nome = Column(String, nullable=False)
-    taglia = Column(String, nullable=False)
-    condizione = Column(String, nullable=False)
-    prezzo = Column(String, default=0)
-    venduto = Column(Boolean, default=False)
-
-    outfit_id = Column(Integer, ForeignKey("outfit.id", ondelete="SET NULL"), nullable=True)  # 🔗 relazione
-
-
-class Outfit(Base):
-    __tablename__ = "outfit"
-
-    id = Column(Integer, primary_key=True, index=True)
-    post_id = Column(Integer)
-    nome = Column(String, nullable=False)
-    sconto_percentuale = Column(Integer,default=0)
-    prezzo_finale = Column(Float,default=0)
-    venduto = Column(Boolean, default=False)
-
-    articoli = relationship("Articolo", backref="outfit", cascade="all, delete", lazy="selectin")  # 🔁
-
 class Acquisto(Base):
     __tablename__ = "acquisto"
 
@@ -87,29 +61,6 @@ class Like(Base):
     id = Column(Integer, primary_key=True, index=True)
     utente_id = Column(Integer, nullable=False)
     post_id = Column(Integer, nullable=False)
-
-class BloccoUtente(Base):
-    __tablename__ = "bloccoUtente"
-
-    id = Column(Integer, primary_key= True, index=True)
-    bloccante_id = Column(Integer, nullable=False)
-    bloccato_id = Column(Integer, nullable=False)
-
-class NascondiPost(Base):
-    __tablename__ = "nascondiPost"
-
-    id = Column(Integer, primary_key=True, index=True)
-    utente_id = Column(Integer, nullable=False)
-    post_id = Column(Integer, nullable=False)
-
-class CommentoProfilo(Base):
-    __tablename__ = "commentoProfilo"
-
-    id = Column(Integer, primary_key=True, index=True)
-    autore_id = Column(Integer, nullable=False)
-    destinatario_id = Column(Integer, nullable=False)
-    contenuto = Column(String, nullable=False)
-    approvato = Column(Boolean, default=False)
 
 
 class MetodoPagamento(Base):
@@ -135,8 +86,6 @@ class Pagamento(Base):
 
     # Relazione opzionale (se vuoi recuperare l'acquisto associato)
     acquisto = relationship("Acquisto", backref="pagamento")
-
-
 
 
 class Salvataggio(Base):

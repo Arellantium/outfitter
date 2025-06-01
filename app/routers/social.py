@@ -4,12 +4,11 @@ from sqlalchemy.future import select
 from typing import List
 from sqlalchemy import func
 from app.configuration.dependencies_database import get_db
-from app.models.models import Like, Follow, CommentoProfilo, Post, Utente
+from app.models.models import Like, Follow, Post, Utente
 from app.services.auth import get_current_user
 
 from app.schemas.like import Likebase
 from app.schemas.follow import FollowBase
-from app.schemas.commentoProfilo import CommentoProfiloBase
 
 router = APIRouter(prefix="/social", tags=["Social Interactions"])
 
