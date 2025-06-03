@@ -1,0 +1,300 @@
+/* LandingPage.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+:root {
+    /* Palette Colori */
+    --lp-bg-main: #FFFFFF; /* <<< MODIFICA: Sfondo pagina principale bianco */
+    --lp-bg-accent: #FAF8F1; /* Beige, ora usato per accenti, non per lo sfondo principale */
+    --lp-text-main: #333333; /* Testo principale più scuro per contrasto su bianco */
+    --lp-text-secondary: #555555; /* Testo secondario */
+    --lp-primary: #CAA870; 
+    --lp-primary-darker: #B08D57;
+    --lp-text-on-primary: #FFFFFF; /* Testo bianco su bottoni primari */
+    --lp-card-bg: #FFFFFF; /* Sfondo card rimane bianco */
+    --lp-card-border: rgba(0, 0, 0, 0.1); /* Bordo più neutro per le card su sfondo bianco */
+    --lp-card-shadow: rgba(0, 0, 0, 0.06); /* Ombra più neutra */
+    --lp-navbar-border: rgba(0, 0, 0, 0.1); /* Bordo navbar più neutro */
+
+    /* Font */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Poppins', sans-serif;
+}
+
+/* Stile corpo specifico per la LandingPage (o integra nel tuo CSS globale) */
+/* Se hai un selettore body globale, modifica quello. Altrimenti, assicurati 
+   che il body abbia una classe specifica quando questa pagina è attiva. */
+body.landing-page-body, html.landing-page-html {
+    margin: 0;
+    background-color: var(--lp-bg-main); /* <<< USA LO SFONDO BIANCO */
+    color: var(--lp-text-main);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+.ai-shopper-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.ai-shopper-navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 2.5rem;
+    /* Sfondo navbar: bianco con trasparenza per un look pulito su sfondo bianco */
+    background-color: rgba(255, 255, 255, 0.85); 
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--lp-navbar-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.ai-shopper-navbar .nav-brand-hint {
+    font-family: var(--font-display);
+    font-size: 2.2rem; 
+    color: var(--lp-primary); /* Mantenuto il colore primario per il brand */
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ai-shopper-navbar .nav-item {
+    margin-left: 2rem; 
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--lp-text-secondary); /* Testo secondario per i link navbar */
+    opacity: 0.9;
+    cursor: pointer;
+    transition: color 0.2s ease, opacity 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ai-shopper-navbar .nav-item:hover,
+.ai-shopper-navbar .nav-item.active {
+    color: var(--lp-primary-darker); /* Colore primario scuro su hover */
+    opacity: 1;
+}
+
+.ai-shopper-main-content {
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+    padding: 4rem 1.5rem;
+    z-index: 1;
+}
+
+.ai-shopper-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    font-weight: 700;
+    color: var(--lp-text-main); /* Testo principale per il titolo */
+    margin-bottom: 1.2rem;
+    line-height: 1.15;
+}
+
+.ai-shopper-subtitle {
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    color: var(--lp-text-secondary); /* Testo secondario per il sottotitolo */
+    opacity: 0.9; /* Leggermente più opaco */
+    max-width: 650px; 
+    margin: 0 auto 3rem auto; 
+}
+
+.ai-shopper-button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem; 
+    margin-bottom: 4.5rem; 
+}
+
+.btn-ai {
+    padding: 0.9rem 2.2rem; 
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    border: 2px solid transparent; 
+    text-transform: uppercase;
+    letter-spacing: 0.8px; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-primary-ai {
+    background: linear-gradient(135deg, var(--lp-primary), var(--lp-primary-darker));
+    color: var(--lp-text-on-primary); /* Testo bianco sul bottone primario */
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.btn-primary-ai:hover {
+    background: linear-gradient(135deg, var(--lp-primary-darker), var(--lp-primary));
+    box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+}
+.btn-primary-ai:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Potresti voler aggiungere uno stile per un bottone secondario se necessario,
+   che potrebbe usare lo sfondo --lp-bg-accent (il beige) e testo scuro.
+.btn-secondary-ai {
+    background-color: var(--lp-bg-accent);
+    color: var(--lp-text-main);
+    border-color: var(--lp-primary); 
+}
+.btn-secondary-ai:hover {
+    background-color: #f3ede4; // Un beige leggermente più scuro
+    border-color: var(--lp-primary-darker);
+}
+*/
+
+.ai-shopper-suggestions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem; 
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto 4rem auto;
+}
+
+.suggestion-card {
+    background-color: var(--lp-card-bg); /* Sfondo card bianco */
+    border-radius: 12px;
+    box-shadow: 0 5px 20px var(--lp-card-shadow); 
+    padding: 1.2rem; 
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--lp-card-border); 
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+}
+
+.suggestion-card:hover {
+    transform: translateY(-10px); 
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1); /* Ombra leggermente più scura per le card */
+}
+
+.suggestion-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px; 
+    margin-bottom: 1.2rem;
+}
+
+.suggestion-card p {
+    font-weight: 600;
+    color: var(--lp-text-main); /* Testo principale per le card */
+    font-size: 1.1rem; 
+    margin-top: auto;
+}
+
+.ai-chat-button { /* Bottone flottante */
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, var(--lp-primary), var(--lp-primary-darker));
+    color: var(--lp-text-on-primary); 
+    padding: 1rem;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 5px 18px rgba(0,0,0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    z-index: 1000;
+}
+
+.ai-chat-button:hover {
+    background: linear-gradient(135deg, var(--lp-primary-darker), var(--lp-primary));
+    transform: scale(1.1) rotate(10deg); 
+    box-shadow: 0 8px 25px rgba(0,0,0, 0.25);
+}
+
+.ai-chat-button svg {
+    width: 24px; 
+    height: 24px;
+    stroke: var(--lp-text-on-primary);
+    fill: var(--lp-text-on-primary);
+}
+
+/* Adattamenti responsive */
+@media (max-width: 768px) {
+    .ai-shopper-navbar {
+        padding: 1rem 1.5rem;
+        /* margin-bottom: 2.5rem; Non più necessario se il main content ha il suo padding-top */
+    }
+    /* ... altri aggiustamenti responsive come prima ... */
+    .ai-shopper-main-content {
+        padding-top: 2.5rem; /* Aggiunto padding-top per staccare dalla navbar sticky */
+    }
+}
+
+/* ... il resto delle media query come le avevi, assicurati che i colori del testo
+     siano adatti allo sfondo bianco se li modifichi specificamente nelle media query ... */
+
+@media (max-width: 480px) {
+    .ai-shopper-navbar {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+    .ai-shopper-navbar div {
+        margin-top: 0.5rem;
+    }
+    .ai-shopper-navbar .nav-brand-hint {
+        text-align: center;
+    }
+    .ai-shopper-main-content {
+        padding: 2rem 1rem;
+        padding-top: 2rem; /* Aggiunto padding-top per staccare dalla navbar sticky */
+    }
+    .ai-shopper-title {
+        font-size: clamp(2.2rem, 8vw, 2.8rem);
+    }
+    .ai-shopper-subtitle {
+        font-size: 0.95rem;
+    }
+     .btn-ai {
+        padding: 0.8rem 1.8rem;
+        font-size: 0.9rem;
+    }
+    .ai-shopper-suggestions {
+        grid-template-columns: 1fr;
+        gap: 1.8rem;
+    }
+    .suggestion-card {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .suggestion-card img {
+        height: 160px;
+    }
+    .ai-chat-button {
+        padding: 0.9rem;
+        bottom: 20px;
+        right: 20px;
+    }
+    .ai-chat-button svg {
+        width: 20px;
+        height: 20px;
+    }
+}

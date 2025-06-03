@@ -1,0 +1,46 @@
+.profile-stats {
+  font-family: 'Poppins', sans-serif;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #777;
+}
+
+.profile-stats .text-center:hover .stat-number {
+  color: #CAA870;
+  transition: color 0.2s ease;
+}
+
+.profile-tabs-nav-compact .nav-link {
+  background-color: transparent !important;
+  border: none !important;
+  color: #777 !important;
+  font-weight: 500;
+  font-size: 0.85rem; /* Più piccolo */
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 0.4rem 0.8rem; /* Ridotto */
+  border-radius: 15px;
+  transition: all 0.2s ease;
+  margin: 0 4px; /* Spaziatura tra i pulsanti */
+}
+
+.profile-tabs-nav-compact .nav-link.active {
+  background-color: #CAA870 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.profile-tabs-nav-compact .nav-link:hover {
+  background-color: rgba(202, 168, 112, 0.1) !important;
+  color: #CAA870 !important;
+}

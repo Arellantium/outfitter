@@ -2,14 +2,13 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List
-
+from sqlalchemy import func
 from app.configuration.dependencies_database import get_db
-from app.models.models import Like, Follow, CommentoProfilo, Post, Utente
+from app.models.models import Like, Follow, Post, Utente
 from app.services.auth import get_current_user
 
 from app.schemas.like import Likebase
 from app.schemas.follow import FollowBase
-from app.schemas.commentoProfilo import CommentoProfiloBase
 
 router = APIRouter(prefix="/social", tags=["Social Interactions"])
 
@@ -17,7 +16,7 @@ router = APIRouter(prefix="/social", tags=["Social Interactions"])
 # 1. LIKE / UNLIKE
 # =========================
 
-@router.post("/like/{post_id}")
+@router.put("/like/{post_id}")
 async def like_post(post_id: int, db: AsyncSession = Depends(get_db), current_user: str = Depends(get_current_user)):
     result = await db.execute(select(Post).filter_by(id=post_id))
     post = result.scalar_one_or_none()
@@ -40,7 +39,7 @@ async def like_post(post_id: int, db: AsyncSession = Depends(get_db), current_us
     return {"message": f"Like aggiunto al post {post_id}"}
 
 
-@router.post("/unlike/{post_id}")
+@router.put("/unlike/{post_id}")
 async def unlike_post(post_id: int, db: AsyncSession = Depends(get_db), current_user: str = Depends(get_current_user)):
     result = await db.execute(select(Post).filter_by(id=post_id))
     post = result.scalar_one_or_none()
@@ -108,3 +107,31 @@ async def get_followers(user_id: int, db: AsyncSession = Depends(get_db)):
 async def get_following(user_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Follow).filter(Follow.follower_id == user_id))
     return result.scalars().all()
+
+
+@router.get("/profilo/statistiche/{user_id}")
+async def get_user_statistics(user_id: int, db: AsyncSession = Depends(get_db)):
+    # Verifica che l'utente esista
+    result = await db.execute(select(Utente).where(Utente.id == user_id))
+    utente = result.scalars().first()
+    if not utente:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+    
+    # Conta i post
+    post_query = await db.execute(select(func.count()).where(Post.author_id == user_id))
+    post_count = post_query.scalar()
+
+    # Conta i follower (chi segue l'utente)
+    follower_query = await db.execute(select(func.count()).where(Follow.seguito_id == user_id))
+    follower_count = follower_query.scalar()
+
+    # Conta i following (chi l'utente segue)
+    following_query = await db.execute(select(func.count()).where(Follow.follower_id == user_id))
+    following_count = following_query.scalar()
+
+    return {
+        "user_id": user_id,
+        "post_count": post_count,
+        "follower_count": follower_count,
+        "following_count": following_count
+    }

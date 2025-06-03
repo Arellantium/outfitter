@@ -1,72 +1,95 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.configuration.database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.configuration.dependencies_database import get_db
 from app.models.models import Salvataggio, Post, Utente
 from app.services.auth import get_current_user
 from app.schemas.salvataggioBase import SalvataggioBase
 from app.schemas.salvataggioOut import SalvataggioPostOut
+from sqlalchemy import select, desc
 
 router = APIRouter(prefix="/saved", tags=["Saved"])
 
 # Salva un post
 @router.post("/", response_model=SalvataggioPostOut)
-def save_post(
+async def save_post(
     data: SalvataggioBase,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user)
 ):
-    user = db.query(Utente).filter(Utente.nome == current_user).first()
+    result = await db.execute(select(Utente).where(Utente.nome == current_user))
+    user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="Utente non trovato")
 
-    post = db.query(Post).filter(Post.id == data.post_id).first()
+    result = await db.execute(select(Post).where(Post.id == data.post_id))
+    post = result.scalar_one_or_none()
     if not post:
         raise HTTPException(status_code=404, detail="Post non trovato")
 
-    already_saved = db.query(Salvataggio).filter_by(utente_id=user.id, post_id=post.id).first()
+    result = await db.execute(
+        select(Salvataggio).where(Salvataggio.utente_id == user.id, Salvataggio.post_id == post.id)
+    )
+    already_saved = result.scalar_one_or_none()
     if already_saved:
         raise HTTPException(status_code=400, detail="Hai già salvato questo post")
 
     new_saved = Salvataggio(utente_id=user.id, post_id=post.id)
     db.add(new_saved)
-    db.commit()
-    db.refresh(post)
+    await db.commit()
+    await db.refresh(post)
     return post
 
 # Ottieni tutti i post salvati da un utente
-@router.get("/", response_model=list[SalvataggioPostOut])
-def get_saved_posts(
-    db: Session = Depends(get_db),
-    current_user: str = Depends(get_current_user)
+@router.get("/salvati", tags=["utente"])
+async def get_user_salvataggi(
+    db: AsyncSession = Depends(get_db),
+    current_user_name: str = Depends(get_current_user)
 ):
-    user = db.query(Utente).filter(Utente.nome == current_user).first()
+    result = await db.execute(select(Utente).where(Utente.nome == current_user_name))
+    user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="Utente non trovato")
 
-    saved_posts = (
-        db.query(Post)
-        .join(Salvataggio, Post.id == Salvataggio.post_id)
-        .filter(Salvataggio.utente_id == user.id)
-        .distinct()
-        .all()
+    stmt = (
+        select(Post)
+        .join(Salvataggio, Salvataggio.post_id == Post.id)
+        .where(Salvataggio.utente_id == user.id)
+        .order_by(desc(Post.created_at))
     )
-    return saved_posts
+    result = await db.execute(stmt)
+    posts = result.scalars().all()
+
+    return [
+        {
+            "post_id": post.id,
+            "description": post.description,
+            "image_url": post.image_url,
+            "prezzo_finale": post.prezzo_finale,
+            "venduto": post.venduto
+        }
+        for post in posts
+    ]
 
 # Rimuovi un post salvato
 @router.delete("/{post_id}")
-def delete_saved_post(
+async def delete_saved_post(
     post_id: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     current_user: str = Depends(get_current_user)
 ):
-    user = db.query(Utente).filter(Utente.nome == current_user).first()
+    result = await db.execute(select(Utente).where(Utente.nome == current_user))
+    user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="Utente non trovato")
 
-    saved = db.query(Salvataggio).filter_by(post_id=post_id, utente_id=user.id).first()
+    result = await db.execute(
+        select(Salvataggio).where(Salvataggio.post_id == post_id, Salvataggio.utente_id == user.id)
+    )
+    saved = result.scalar_one_or_none()
     if not saved:
         raise HTTPException(status_code=404, detail="Post non salvato")
 
-    db.delete(saved)
-    db.commit()
+    await db.delete(saved)
+    await db.commit()
     return {"message": "Post rimosso dai salvati"}

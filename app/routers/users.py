@@ -193,15 +193,16 @@ async def update_me(
     return user
 
 @router.get(
-    "/utente/{username}",
+    "/utenti/{user_id}",
     response_model=UtenteOut,
     tags=["users"],
     summary="Cerca un utente per nome",
-    description="Restituisce le informazioni pubbliche di un utente dato il suo nome (username)."
+    description="Restituisce le informazioni pubbliche di un utente dato il suo nome (user_id)."
 )
-async def get_utente_by_username(username: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Utente).where(Utente.nome == username))
+async def get_utente_by_username(user_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Utente).where(Utente.id == user_id))
     user = result.scalars().first()
     if user is None:
         raise HTTPException(status_code=404, detail="Utente non trovato")
     return user
+
