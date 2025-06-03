@@ -9,17 +9,17 @@ const Footer = () => {
       <Container>
         <Row>
           <Col md={4} className="mb-4">
-            <h5 className="fw-bold">st<span style={{ color: '#c1975c' }}>A</span>llist</h5>
+            <h5 className="fw-bold">st<span style={{ color: '#c1975c' }}>AI</span>list</h5>
             <p>La tua community per creare, condividere e scoprire outfit ispirati.</p>
           </Col>
 
           <Col md={4} className="mb-4">
             <h6 className="fw-semibold">Link Utili</h6>
             <ul className="list-unstyled">
-              <li><a href="/" className="footer-link">Home</a></li>
-              <li><a href="/about" className="footer-link">Chi siamo</a></li>
-              <li><a href="/privacy" className="footer-link">Privacy</a></li>
-              <li><a href="/contatti" className="footer-link">Contatti</a></li>
+              <li><a href="#" className="footer-link">Home</a></li>
+              <li><a href="#" className="footer-link">Chi siamo</a></li>
+              <li><a href="#" className="footer-link">Privacy</a></li>
+              <li><a href="#" className="footer-link">Contatti</a></li>
             </ul>
           </Col>
 

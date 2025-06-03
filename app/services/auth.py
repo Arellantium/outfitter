@@ -46,6 +46,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     """
     Dependency per ottenere l'utente corrente a partire dal token.
     """
+    print("TOKEN RICEVUTO:", token)
     return verify_token(token)
 
 # Funzione per ottenere l'utente corrente dal token JWT

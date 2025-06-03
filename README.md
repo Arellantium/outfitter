@@ -25,13 +25,10 @@ Gestione dell'accesso utenti tramite:
 
 Ogni post rappresenta un outfit, composto da immagini e articoli collegati.
 
-**Tabelle:** `Post`, `Articolo`, `Outfit`, `Utente`
+**Tabelle:** `Post`, `Utente`
 
 **Campi chiave:**
 - `Post`: `utente_id`, `stato`, `data_pubblicazione`, `visualizzazioni`, `visibile`
-- `Articolo`: `post_id`, `nome`, `taglia`, `condizione`, `prezzo`, `venduto`
-- `Outfit`: `post_id`, `prezzo_finale`, `sconto_percentuale`, `venduto`
-
 **Azioni backend:**
 - Upload immagini (max 5)
 - Salvataggio post e articoli
@@ -43,9 +40,9 @@ Ogni post rappresenta un outfit, composto da immagini e articoli collegati.
 
 Gli utenti possono acquistare un outfit completo.
 
-**Tabelle:** `Acquisto`, `Articolo`, `Outfit`
+**Tabelle:**  `Post`, `Outfit`
 
-**Campi principali:** `articolo_id`, `outfit_id`, `utente_id`, `data_acquisto`
+**Campi principali:**  `post_id`, `utente_id`, `data_acquisto`
 
 **Azioni backend:**
 - Verifica disponibilità
@@ -79,42 +76,6 @@ Sistema di follow/unfollow tra utenti.
 
 ---
 
-##  Commenti al Profilo
-
-Gli utenti possono commentare il profilo di altri. I commenti sono visibili solo se approvati.
-
-**Tabella:** `CommentoProfilo`
-
-**Campi:** `autore_id`, `destinatario_id`, `contenuto`, `approvato`
-
-**Azioni backend:**
-- Salvataggio commento (`approvato = FALSE` di default)
-- Endpoint per approvazione/rifiuto
-
----
-
-##  Nascondere Post
-
-Possibilità per un utente di nascondere post di altri utenti.
-
-**Tabella:** `NascondiPost`
-
-**Azioni backend:**
-- Esclusione dei post nascosti nella feed
-
----
-
-##  Bloccare un Profilo
-
-Blocco totale di interazione tra due utenti.
-
-**Tabella:** `BloccoUtente`
-
-**Azioni backend:**
-- Filtraggio di contenuti e interazioni tra utenti bloccati
-
----
-
 ##  AI Personal Shopper (Estendibile)
 
 Modulo di raccomandazione personalizzato per l'utente basato su:
@@ -122,7 +83,7 @@ Modulo di raccomandazione personalizzato per l'utente basato su:
 - Cronologia acquisti
 - Interazioni social
 
-**Tabelle coinvolte:** `Utente`, `Acquisto`, `Like`, `Articolo`, `Outfit`
+**Tabelle coinvolte:** `Utente`, `Acquisto`, `Like`, `Post`
 
 **Azioni backend:**
 - Analisi comportamentale
@@ -142,5 +103,5 @@ Modulo di raccomandazione personalizzato per l'utente basato su:
 ---
 
 
-**Autori**: Alessandro Arellano, Tommaso Dionisi  
+**Autori**: Alessandro Arellano, Tommaso Dionisi 
 
